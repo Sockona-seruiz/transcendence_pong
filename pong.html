@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+		<meta charset="utf-8"/>
+		<script type="application/javascript">
+
+			var Lup = 250;
+			var Rup = 250;
+			var BallUp = 290;
+			var BallLeft = 380;
+			var	BallDir = 1;
+			var LeftScore = 0;
+			var RightScore = 0;
+			var LeftHit = 0;
+			var RightHit = 0;
+			var	PosDiff = 0;
+			var	SpeedMultiplier = 1;
+
+			var BallAngle = Math.PI;
+			var M_PI = Math.PI;
+			var M_2PI = 2 * Math.PI;
+			var M_PI_2 = Math.PI / 2;
+			var M_3PI_2 = 3 * (Math.PI / 2);
+
+			function resetCanvas()
+			{
+				Lup = 250;
+				Rup = 250;
+				BallUp = 290;
+				BallLeft = 380;
+				BallDir = 1;
+				SpeedMultiplier = 1;
+				LeftHit = 0;
+				RightHit = 0;
+			}
+
+			function updateCanvas()
+			{
+				var canvas = document.getElementById('canvas');
+				if (canvas.getContext)
+				{
+					var ctx = canvas.getContext('2d');
+
+					ctx.fillStyle = 'rgb(0, 0, 0)'; //Background
+					ctx.fillRect(0, 0, 800, 600);
+
+					ctx.fillStyle = 'rgb(255, 255, 255)'; //Left
+					ctx.fillRect(10, Lup, 20, 100);
+
+					ctx.fillStyle = 'rgba(255, 255, 255)'; //Right
+					ctx.fillRect(800 - 30,  Rup, 20, 100);
+
+					ctx.fillStyle = 'rgba(255, 255, 255)'; //Ball
+					ctx.fillRect(BallLeft,  BallUp, 20, 20);
+				}
+
+				var LeftScoreText = document.getElementById('canvas').getContext('2d');
+				LeftScoreText.font = '48px serif';
+				LeftScoreText.fillText(LeftScore, 300, 50);
+
+				var RightScoreText = document.getElementById('canvas').getContext('2d');
+				RightScoreText.font = '48px serif';
+				RightScoreText.fillText(RightScore, 500, 50);
+
+
+				// var PosDiffText = document.getElementById('canvas').getContext('2d');
+				// PosDiffText.font = '48px serif';
+				// PosDiffText.fillText(PosDiff, 500, 100);
+				// var AngleText = document.getElementById('canvas').getContext('2d');
+				// AngleText.font = '48px serif';
+				// AngleText.fillText(BallAngle, 500, 100);
+
+				// var SinText = document.getElementById('canvas').getContext('2d');
+				// SinText.font = '48px serif';
+				// SinText.fillText(Math.sin(BallAngle), 200, 100);
+
+				// var CosText = document.getElementById('canvas').getContext('2d');
+				// CosText.font = '48px serif';
+				// CosText.fillText(Math.cos(BallAngle), 200, 200);
+			}
+
+
+			//Sortir la boule de la barre en cas de collision
+			function moveBall()
+			{
+				BallLeft += Math.cos(BallAngle) * SpeedMultiplier;
+				BallUp += (Math.sin(BallAngle) * -1) * SpeedMultiplier;
+
+				//Collide Left Bar
+				if (BallLeft >= 10 && BallLeft <= 30 && (BallUp >= Lup && BallUp <= Lup + 100 || BallUp + 20 >= Lup && BallUp + 20 <= Lup + 100))
+				{
+					PosDiff = BallUp + 10 - Lup - 50;
+					if (LeftHit == 0)
+					{
+						BallAngle = Math.PI - BallAngle - (PosDiff / 300);
+						if (BallAngle > M_2PI)
+							BallAngle -= M_2PI;
+						else if (BallAngle < 0)
+							BallAngle += M_2PI;
+						LeftHit = 1;
+						if (SpeedMultiplier < 3)
+							SpeedMultiplier += 0.1;
+					}
+					RightHit = 0;
+				}
+				
+				//Collide Right Bar
+				if (BallLeft + 20 <= 790 && BallLeft + 20 >= 770 && (BallUp >= Rup && BallUp <= Rup + 100 || BallUp + 20 >= Rup && BallUp + 20 <= Rup + 100))
+				{
+					PosDiff = BallUp + 10 - Rup - 50;
+					if (RightHit == 0)
+					{
+						BallAngle = Math.PI - BallAngle + (PosDiff / 300);
+						if (BallAngle > M_2PI)
+							BallAngle -= M_2PI;
+						else if (BallAngle < 0)
+							BallAngle += M_2PI;
+						RightHit = 1;
+						if (SpeedMultiplier < 3)
+							SpeedMultiplier += 0.1;
+					}
+					LeftHit = 0;
+				}
+
+				//Collide Roof / Floor
+				if (BallUp <= 0 || BallUp + 20 >= 600)
+				{
+					BallAngle = M_2PI - BallAngle;
+					if (BallAngle > M_2PI)
+						BallAngle -= M_2PI;
+					else if (BallAngle < 0)
+						BallAngle += M_2PI;
+				}
+
+				//Goal
+				if (BallLeft + 20 >= 800)
+				{
+					LeftScore += 1;
+					BallAngle = M_2PI;
+					resetCanvas();					
+				}
+
+				if (BallLeft <= 0)
+				{
+					RightScore += 1;
+					BallAngle = Math.PI;
+					resetCanvas();
+				}
+				/*
+				if (BallDir == 1)
+				{
+					BallLeft -= 1.5;
+					//collide
+					if (BallLeft >= 10 && BallLeft <= 30 && (BallUp >= Lup && BallUp <= Lup + 100 || BallUp + 20 >= Lup && BallUp + 20 <= Lup + 100))
+					{
+						BallDir = -1;
+					}
+					else if (BallLeft <= 0)
+					{
+						RightScore += 1;
+						resetCanvas();
+					}
+				}
+				else
+				{
+					BallLeft += 1.5;
+					if (BallLeft + 20 <= 790 && BallLeft + 20 >= 770 && (BallUp >= Rup && BallUp <= Rup + 100 || BallUp + 20 >= Rup && BallUp + 20 <= Rup + 100))
+					{
+						BallDir = 1;
+					}
+					else if (BallLeft + 20 >= 800)
+					{
+						LeftScore += 1;
+						resetCanvas();
+					}
+				}
+				*/
+			}
+
+			window.addEventListener("keydown", function (event)
+			{
+ 				if (event.defaultPrevented)
+				{
+    				return;
+  				}
+				if (event.key == "ArrowDown")
+				{
+					if (Rup <= 490)
+						Rup += 10;
+					//updateCanvas(Lup, Rup, BallLeft, BallUp);
+				}
+				if (event.key == "ArrowUp")
+				{
+					if (Rup >= 10)
+						Rup -= 10;
+					//updateCanvas(Lup, Rup, BallLeft, BallUp);
+				}
+				if (event.key == "ArrowLeft")
+				{
+					if (Lup >= 10)
+						Lup -= 10;
+					//updateCanvas(Lup, Rup, BallLeft, BallUp);
+				}
+				if (event.key == "ArrowRight")
+				{
+					if (Lup <= 490)
+						Lup += 10;
+					//updateCanvas(Lup, Rup, BallLeft, BallUp);
+				}
+
+				/*
+  				switch (event.key)
+				{
+    				case "ArrowDown":
+						if (Lup <= 490)
+							Lup += 10;
+						updateCanvas(Lup, Rup, BallLeft, BallUp);
+						//alert('Down was pressed');
+						break;
+					case "ArrowUp":
+						if (Lup >= 10)
+							Lup -= 10;
+						updateCanvas(Lup, Rup, BallLeft, BallUp);
+						//alert('Up was pressed');
+						break;
+					case "ArrowLeft":
+						alert('Left was pressed');
+						break;
+					case "ArrowRight":
+						alert('Right was pressed');
+						break;
+					default:
+					return;
+				}
+  				event.preventDefault();
+				  */
+			}, true);
+
+			
+			setInterval(moveBall, 1);
+			setInterval(updateCanvas, 1);
+
+
+		</script>
+
+		<style type="text/css">
+			canvas { border: 1px solid black; }
+		</style>
+
+	</head>
+	<body onload="draw();">
+		<canvas id="canvas" width="800" height="600"></canvas>
+	</body>
+</html>
