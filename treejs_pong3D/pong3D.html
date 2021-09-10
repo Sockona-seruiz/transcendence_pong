@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>pong 3D</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+			var Ball_pos_x = 0;
+			var Ball_pos_z = 0;
+			var	Left_bar_pos_x = 0;
+			var	Left_bar_pos_z = 0;
+			var Right_bar_pos_x = 0;
+			var Right_bar_pos_z = 0;
+
+			var BallAngle = Math.PI;
+			var M_PI = Math.PI;
+			var M_2PI = 2 * Math.PI;
+			var M_PI_2 = Math.PI / 2;
+			var M_3PI_2 = 3 * (Math.PI / 2);
+			var	SpeedMultiplier = 0.2;
+			var	LeftHit = 0;
+			var RightHit = 0;
+			var PosDiff = 0;
+			var LeftScore = 0;
+			var RightScore = 0;
+
+			//La scene va stocker les elements 3D
+			const scene = new THREE.Scene();
+
+			//(FOV, Aspect Ratio, Début distance de rendu, fin)
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			//Renderer
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			//On crée la géométrie
+			const geometry_bar = new THREE.BoxGeometry(1, 1, 8);
+			//Selection du material
+
+			//Material FLAT qui ne réagit pas à la lumière :
+			//const material_bar_left = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
+			//Matérial Dynamique qui y réagit :
+			const material_bar_left = new THREE.MeshStandardMaterial( { color: 0xffffff } );
+			//On crée la mesh en utiliant la géométrie et le mat
+			const bar_left = new THREE.Mesh( geometry_bar, material_bar_left );
+	
+			//On crée la géométrie
+			const geometry = new THREE.BoxGeometry(1, 1, 8);
+			//Selection du material
+
+			//Material FLAT qui ne réagit pas à la lumière :
+			//const material_bar_right = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
+			//Matérial Dynamique qui y réagit :
+			const material_bar_right = new THREE.MeshStandardMaterial( { color: 0xffffff } );
+			//On crée la mesh en utiliant la géométrie et le mat
+			const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
+			//On l'ajoute à la scène
+
+			bar_left.position.x = -25;
+			Left_bar_pos_x = -25;
+			bar_right.position.x = 25;
+			Right_bar_pos_x = 25;
+			scene.add( bar_left );
+			scene.add( bar_right );
+
+
+			//Creation de l'arène
+			const geometry_edge_top = new THREE.BoxGeometry(60, 1, 1);
+			const geometry_edge_side = new THREE.BoxGeometry(1, 1, 41);
+
+			const material_edge = new THREE.MeshStandardMaterial( { color: 0xffffff } );
+			
+			const edge_top = new THREE.Mesh( geometry_edge_top, material_edge );
+			const edge_bot = new THREE.Mesh( geometry_edge_top, material_edge );
+
+			const edge_left = new THREE.Mesh( geometry_edge_side, material_edge );
+			const edge_right = new THREE.Mesh( geometry_edge_side, material_edge );
+			// const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
+			// const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
+			// const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
+
+			edge_top.position.z = -20;
+			edge_bot.position.z = 20;
+			edge_left.position.x = -30;
+			edge_right.position.x = 30;
+			scene.add( edge_top, edge_bot, edge_left, edge_right );
+
+
+			//Ball
+			const geometry_ball = new THREE.BoxGeometry(1, 1, 1);
+			const ball_m = new THREE.MeshStandardMaterial( { color: 0xffffff, wireframe: false } );
+			const ball = new THREE.Mesh( geometry_ball, ball_m );
+			scene.add (ball);
+
+
+			//WireframeCircle
+			// const geometry_2 = new THREE.SphereGeometry( 2, 100, 100 );
+
+			// const wireframe = new THREE.WireframeGeometry( geometry_2 );
+
+			// const line = new THREE.LineSegments( wireframe );
+			// line.material.depthTest = false;
+			// line.material.opacity = 0.25;
+			// line.material.transparent = true;
+			// scene.add( line );
+
+			//Point Light
+			const pointLight = new THREE.PointLight(0xffffff);
+			// //On change sa position en x, y, et z
+			 pointLight.position.set(0, 10, 10);
+			 scene.add(pointLight);
+
+			// const lightHelper = new THREE.PointLightHelper(pointLight);
+			// scene.add(lightHelper);
+
+			//first Directional Light
+			// const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+
+			// const targetObject = new THREE.Object3D();
+			// targetObject.position.x = -5;
+			// scene.add(targetObject);
+
+			// directionalLight.target = targetObject;
+			// scene.add( directionalLight.target );
+			// scene.add(directionalLight);
+
+			// //Second One
+			// const directionalLight_bot = new THREE.DirectionalLight( 0xff0000, 1 );
+
+			// const targetObject_bot = new THREE.Object3D();
+			// targetObject_bot.position.x = -5;
+			// targetObject_bot.position.z = -2;
+			// scene.add(targetObject_bot);
+
+			// directionalLight_bot.target = targetObject_bot;
+			// scene.add( directionalLight_bot.target );
+			// scene.add(directionalLight_bot);
+
+			// const directionalLight_2 = new THREE.DirectionalLight( 0xff0000, 0.5 );
+			// scene.add( directionalLight_2 );
+
+			// const lightHelper = new THREE.DirectionalLightHelper(directionalLight);
+			// scene.add(lightHelper);
+
+			//Light Helper permet de connaitre la position d'une point light
+			// const lightHelper = new THREE.PointLightHelper(pointLight);
+			// scene.add(lightHelper);
+
+			//Ambient Light
+			// const ambientLight = new THREE.AmbientLight(0xffffff);
+			// scene.add(ambientLight);
+
+			//Grid Helper
+			const gridHelper = new THREE.GridHelper(200, 50);
+			scene.add(gridHelper);
+
+			//La caméra est de base au centre de la scène donc on la décale
+			camera.position.z = 25;
+			camera.position.y = 40;
+
+			camera.rotation.x = -1;
+
+
+			function setupKeyControls()
+			{
+    			//var cube = scene.getObjectByName('cube');
+    			document.onkeydown = function(e)
+				{
+    		    	switch (e.keyCode) 
+					{
+						//left Arrow Key
+    		    		case 37:
+							if (bar_right.position.z - 4 > edge_top.position.z + 0.5)
+    		    				bar_right.position.z -= 0.8;
+    		    			break;
+						//Up Arrow
+						case 38:
+							if (bar_left.position.z - 4 > edge_top.position.z + 0.5)
+    		    				bar_left.position.z -= 0.8;
+    		    			break;
+						//Right Arrow
+    		    		case 39:
+							if (bar_right.position.z + 4 < edge_bot.position.z - 0.5)
+    		    				bar_right.position.z += 0.8;
+    		    			break;
+						//Down Arrow
+    		    		case 40:
+							if (bar_left.position.z + 4 < edge_bot.position.z - 0.5)
+								bar_left.position.z += 0.8;
+    		    			break;
+    		    	}
+    		  };
+    		}
+
+			function resetParams(x)
+			{
+				ball.position.x = 0;
+				ball.position.z = 0;
+				bar_left.position.x = Left_bar_pos_x;
+				bar_left.position.z = 0;
+				bar_right.position.x = Right_bar_pos_x;
+				bar_right.position.z = 0;
+				if (x == 0)
+					BallAngle = Math.PI;
+				else
+					BallAngle = M_2PI;
+				SpeedMultiplier = 0.2;
+				LeftHit = 0;
+				RighHit = 0;
+			}
+
+			function moveBall()
+			{
+				ball.position.x += Math.cos(BallAngle) * SpeedMultiplier;
+				ball.position.z += (Math.sin(BallAngle) * -1) * SpeedMultiplier;
+
+				//  Est dans la barre de gauche en X                 (est dans la barre en Y)
+				//Une barre fait 8 de hauteur
+				if (ball.position.x >= bar_left.position.x - 1 && ball.position.x <= bar_left.position.x + 1 && (ball.position.z - 0.5 <= bar_left.position.z + 4 && ball.position.z + 0.5 >= bar_left.position.z - 4))
+				{
+					if (LeftHit == 0)
+					{
+						LeftHit = 1;
+						PosDiff = ball.position.z - bar_left.position.z;
+						BallAngle = Math.PI - BallAngle - (PosDiff / 30);
+						if (BallAngle > M_2PI)
+							BallAngle -= M_2PI;
+						else if (BallAngle < 0)
+							BallAngle += M_2PI;
+						if (SpeedMultiplier < 0.8)
+							SpeedMultiplier += 0.02;
+					}
+					RightHit = 0;
+				}
+
+				if (ball.position.x >= bar_right.position.x - 1 && ball.position.x <= bar_right.position.x + 1 && (ball.position.z - 0.5 <= bar_right.position.z + 4 && ball.position.z + 0.5 >= bar_right.position.z - 4))
+				{
+					if (RightHit == 0)
+					{
+					RightHit = 1;
+					PosDiff = ball.position.z - bar_right.position.z;
+					BallAngle = Math.PI - BallAngle + (PosDiff/30);
+					if (BallAngle > M_2PI)
+						BallAngle -= M_2PI;
+					else if (BallAngle < 0)
+						BallAngle += M_2PI;
+					if (SpeedMultiplier < 0.8)
+						SpeedMultiplier += 0.02;
+					}
+					LeftHit = 0;
+				}
+
+				if (ball.position.z <= edge_top.position.z + 1 || ball.position.z >= edge_bot.position.z - 1)
+				{
+					BallAngle = M_2PI - BallAngle;
+					if (BallAngle > M_2PI)
+						BallAngle -= M_2PI;
+					else if (BallAngle < 0)
+						BallAngle += M_2PI;
+				}
+
+				if (ball.position.x <= edge_left.position.x + 1)
+				{
+					RightScore += 1;
+					resetParams(0);
+				}
+
+				if (ball.position.x >= edge_right.position.x - 1)
+				{
+					LeftScore += 1;
+					resetParams(1);
+				}
+			}
+
+			//La game loop
+			const animate = function ()
+			{
+				requestAnimationFrame( animate );
+				setupKeyControls();
+				moveBall();
+				//camera.rotation.x -= 0.01;
+
+				// cube.rotation.x += 0.01;
+				// cube.rotation.y += 0.01;
+
+				// line.rotation.x += 0.01;
+				// line.rotation.y += 0.01;
+				// line.rotation.z += 0.01;
+
+				//Lance le rendu de la scene
+				renderer.render( scene, camera );
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
