@@ -1,3 +1,15 @@
+<!-- *********************************************************************** -->
+<!--                                                                         -->
+<!--                                                      :::      ::::::::  -->
+<!-- pong3D.html                                        :+:      :+:    :+:  -->
+<!--                                                  +:+ +:+         +:+    -->
+<!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
+<!--                                              +#+#+#+#+#+   +#+          -->
+<!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
+<!-- Updated: 2021/09/13 13:09:00 by seruiz           ###   ########lyon.fr  -->
+<!--                                                                         -->
+<!-- *********************************************************************** -->
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -22,7 +34,7 @@
 			var M_2PI = 2 * Math.PI;
 			var M_PI_2 = Math.PI / 2;
 			var M_3PI_2 = 3 * (Math.PI / 2);
-			var	SpeedMultiplier = 0.2;
+			var	SpeedMultiplier = 0.4;
 			var	LeftHit = 0;
 			var RightHit = 0;
 			var PosDiff = 0;
@@ -63,10 +75,11 @@
 			const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
 			//On l'ajoute à la scène
 
-			bar_left.position.x = -25;
 			Left_bar_pos_x = -25;
-			bar_right.position.x = 25;
+			bar_left.position.x = Left_bar_pos_x ;
+			
 			Right_bar_pos_x = 25;
+			bar_right.position.x = Right_bar_pos_x;
 			scene.add( bar_left );
 			scene.add( bar_right );
 
@@ -100,16 +113,29 @@
 			scene.add (ball);
 
 
-			//WireframeCircle
-			// const geometry_2 = new THREE.SphereGeometry( 2, 100, 100 );
+			//Score
+			// const loader = new THREE.FontLoader();
 
-			// const wireframe = new THREE.WireframeGeometry( geometry_2 );
+			// loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
+			
+			// 	const score_geometry = new THREE.TextGeometry( 'Hello three.js!', {
+			// 		font: font,
+			// 		size: 8,
+			// 		height: 5,
+			// 		curveSegments: 12,
+			// 		bevelEnabled: true,
+			// 		bevelThickness: 10,
+			// 		bevelSize: 8,
+			// 		bevelOffset: 0,
+			// 		bevelSegments: 5
+			// 	} );
+			// } );
 
-			// const line = new THREE.LineSegments( wireframe );
-			// line.material.depthTest = false;
-			// line.material.opacity = 0.25;
-			// line.material.transparent = true;
-			// scene.add( line );
+			// const Score_mat = new THREE.MeshStandardMaterial( { color: 0xffffff } );
+			// const ScoreL = new THREE.Mesh(score_geometry, Score_mat);
+
+			// ScoreL.position.x = -15;
+			// scene.add(ScoreL);
 
 			//Point Light
 			const pointLight = new THREE.PointLight(0xffffff);
@@ -167,7 +193,7 @@
 
 			camera.rotation.x = -1;
 
-
+/*
 			function setupKeyControls()
 			{
     			//var cube = scene.getObjectByName('cube');
@@ -198,6 +224,57 @@
     		    	}
     		  };
     		}
+*/
+//Keys
+			let UpArrow = false;
+			let DownArrow = false;
+			let Wkey = false;
+			let Skey = false;
+
+const onKeyDown = function ( event )
+{
+	switch ( event.code )
+	{
+		case 'KeyW':
+			Wkey = true;
+			break;
+		case 'KeyS':
+			Skey = true;
+			break;
+
+		case 'ArrowUp':
+			UpArrow = true;
+			break;
+		case 'ArrowDown':
+			DownArrow = true;
+			break;
+	}
+};
+
+const onKeyUp = function ( event )
+{
+	switch ( event.code )
+	{
+		case 'KeyW':
+			Wkey = false;
+			break;
+		case 'KeyS':
+			Skey = false;
+			break;
+
+		case 'ArrowUp':
+			UpArrow = false;
+			break;
+		case 'ArrowDown':
+			DownArrow = false;
+			break;
+	}
+};
+
+document.addEventListener( 'keydown', onKeyDown );
+document.addEventListener( 'keyup', onKeyUp );
+
+
 
 			function resetParams(x)
 			{
@@ -234,7 +311,7 @@
 							BallAngle -= M_2PI;
 						else if (BallAngle < 0)
 							BallAngle += M_2PI;
-						if (SpeedMultiplier < 0.8)
+						if (SpeedMultiplier < 1)
 							SpeedMultiplier += 0.02;
 					}
 					RightHit = 0;
@@ -251,7 +328,7 @@
 						BallAngle -= M_2PI;
 					else if (BallAngle < 0)
 						BallAngle += M_2PI;
-					if (SpeedMultiplier < 0.8)
+					if (SpeedMultiplier < 1)
 						SpeedMultiplier += 0.02;
 					}
 					LeftHit = 0;
@@ -283,8 +360,31 @@
 			const animate = function ()
 			{
 				requestAnimationFrame( animate );
-				setupKeyControls();
+				//setupKeyControls();
 				moveBall();
+
+			if (UpArrow == true)
+			{
+				if (bar_right.position.z - 4 > edge_top.position.z + 0.5)
+    		    	bar_right.position.z -= 0.5;
+    		}
+			if (Wkey == true)
+			{
+				if (bar_left.position.z - 4 > edge_top.position.z + 0.5)
+    		    	bar_left.position.z -= 0.5;
+			}
+			if (DownArrow == true)
+			{
+				if (bar_right.position.z + 4 < edge_bot.position.z - 0.5)
+    		    	bar_right.position.z += 0.5;
+			}
+			if (Skey == true)
+			{
+				if (bar_left.position.z + 4 < edge_bot.position.z - 0.5)
+					bar_left.position.z += 0.5;
+			}
+	
+
 				//camera.rotation.x -= 0.01;
 
 				// cube.rotation.x += 0.01;
