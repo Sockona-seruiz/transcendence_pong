@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/13 15:05:44 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/13 17:27:30 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -95,9 +95,6 @@
 
 			const edge_left = new THREE.Mesh( geometry_edge_side, material_edge );
 			const edge_right = new THREE.Mesh( geometry_edge_side, material_edge );
-			// const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
-			// const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
-			// const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
 
 			edge_top.position.z = -20;
 			edge_bot.position.z = 20;
@@ -113,126 +110,15 @@
 			scene.add (ball);
 
 			let pos_history_x = [0,0,0,0,0,0,0,0];
-			let pos_history_y = [0,0,0,0,0,0,0,0];
-			var	pos_history = 0;
-
-			const geometry_plane = new THREE.PlaneGeometry( 1, 1 );
-			const material_plane = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
-			const plane_0 = new THREE.Mesh( geometry_plane, material_plane );
-			const plane_1 = new THREE.Mesh( geometry_plane, material_plane );
-			const plane_2 = new THREE.Mesh( geometry_plane, material_plane );
-			const plane_3 = new THREE.Mesh( geometry_plane, material_plane );
-			const plane_4 = new THREE.Mesh( geometry_plane, material_plane );
-			const plane_5 = new THREE.Mesh( geometry_plane, material_plane );
-			const plane_6 = new THREE.Mesh( geometry_plane, material_plane );
-			const plane_7 = new THREE.Mesh( geometry_plane, material_plane );
-			
-			let plane_array = [plane_0, plane_1, plane_2, plane_3, plane_4, plane_5, plane_6, plane_7];
-			
-			scene.add( plane_0, plane_1, plane_2, plane_3, plane_4, plane_5, plane_6, plane_7 );
-			plane_0.position.y = -0.5;
-			plane_0.rotation.x += M_PI_2;
-			plane_1.position.y = -0.5;
-			plane_1.rotation.x += M_PI_2;
-			plane_2.position.y = -0.5;
-			plane_2.rotation.x += M_PI_2;
-			plane_3.position.y = -0.5;
-			plane_3.rotation.x += M_PI_2;
-			plane_4.position.y = -0.5;
-			plane_4.rotation.x += M_PI_2;
-			plane_5.position.y = -0.5;
-			plane_5.rotation.x += M_PI_2;
-			plane_6.position.y = -0.5;
-			plane_6.rotation.x += M_PI_2;
-			plane_7.position.y = -0.5;
-			plane_7.rotation.x += M_PI_2;
-
-			// material_plane.color = 0xff0000;
-
-			// const geometry_plane_test = new THREE.PlaneGeometry( 10, 10 );
-			// const plane_test = new THREE.Mesh( geometry_plane_test, material_plane );
-			// scene.add(plane_test);
-			// plane_test.rotation.x += M_PI_2;
-			//Score
-			// const loader = new THREE.FontLoader();
-
-			// loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
-			
-			// 	const score_geometry = new THREE.TextGeometry( 'Hello three.js!', {
-			// 		font: font,
-			// 		size: 8,
-			// 		height: 5,
-			// 		curveSegments: 12,
-			// 		bevelEnabled: true,
-			// 		bevelThickness: 10,
-			// 		bevelSize: 8,
-			// 		bevelOffset: 0,
-			// 		bevelSegments: 5
-			// 	} );
-			// } );
-
-			// const Score_mat = new THREE.MeshStandardMaterial( { color: 0xffffff } );
-			// const ScoreL = new THREE.Mesh(score_geometry, Score_mat);
-
-			// ScoreL.position.x = -15;
-			// scene.add(ScoreL);
+			let pos_history_z = [0,0,0,0,0,0,0,0];
+			var	pos_history = -1 ;
+			squareMesh = null
 
 			// Point Light
 			const pointLight = new THREE.PointLight(0xffffff, 2, 50);
 			// //On change sa position en x, y, et z
 			pointLight.position.set(0, 10, 0);
 			scene.add(pointLight);
-
-			// const pointLight_orange = new THREE.PointLight(0xfea022, 2, 50);
-			// // //On change sa position en x, y, et z
-			// pointLight_orange.position.set(-20, 10, 0);
-			// scene.add(pointLight_orange);
-
-
-			// const pointLight_blue = new THREE.PointLight(0x00c8ff, 2, 50);
-			// // //On change sa position en x, y, et z
-			// pointLight_blue.position.set(20, 10, 0);
-			// scene.add(pointLight_blue);
-
-			// const lightHelper = new THREE.PointLightHelper(pointLight);
-			// scene.add(lightHelper);
-
-			//first Directional Light
-			// const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-
-			// const targetObject = new THREE.Object3D();
-			// targetObject.position.x = -5;
-			// scene.add(targetObject);
-
-			// directionalLight.target = targetObject;
-			// scene.add( directionalLight.target );
-			// scene.add(directionalLight);
-
-			// //Second One
-			// const directionalLight_bot = new THREE.DirectionalLight( 0xff0000, 1 );
-
-			// const targetObject_bot = new THREE.Object3D();
-			// targetObject_bot.position.x = -5;
-			// targetObject_bot.position.z = -2;
-			// scene.add(targetObject_bot);
-
-			// directionalLight_bot.target = targetObject_bot;
-			// scene.add( directionalLight_bot.target );
-			// scene.add(directionalLight_bot);
-
-			// const directionalLight_2 = new THREE.DirectionalLight( 0xff0000, 0.5 );
-			// scene.add( directionalLight_2 );
-
-			// const lightHelper = new THREE.DirectionalLightHelper(directionalLight);
-			// scene.add(lightHelper);
-
-			//Light Helper permet de connaitre la position d'une point light
-			// const lightHelper = new THREE.PointLightHelper(pointLight);
-			// scene.add(lightHelper);
-
-			//Ambient Light
-			// const ambientLight = new THREE.AmbientLight(0xffffff);
-			// scene.add(ambientLight);
 
 			//Grid Helper
 			const gridHelper = new THREE.GridHelper(200, 50);
@@ -244,38 +130,6 @@
 
 			camera.rotation.x = -1;
 
-/*
-			function setupKeyControls()
-			{
-    			//var cube = scene.getObjectByName('cube');
-    			document.onkeydown = function(e)
-				{
-    		    	switch (e.keyCode) 
-					{
-						//left Arrow Key
-    		    		case 37:
-							if (bar_right.position.z - 4 > edge_top.position.z + 0.5)
-    		    				bar_right.position.z -= 0.8;
-    		    			break;
-						//Up Arrow
-						case 38:
-							if (bar_left.position.z - 4 > edge_top.position.z + 0.5)
-    		    				bar_left.position.z -= 0.8;
-    		    			break;
-						//Right Arrow
-    		    		case 39:
-							if (bar_right.position.z + 4 < edge_bot.position.z - 0.5)
-    		    				bar_right.position.z += 0.8;
-    		    			break;
-						//Down Arrow
-    		    		case 40:
-							if (bar_left.position.z + 4 < edge_bot.position.z - 0.5)
-								bar_left.position.z += 0.8;
-    		    			break;
-    		    	}
-    		  };
-    		}
-*/
 //Keys
 			let UpArrow = false;
 			let DownArrow = false;
@@ -331,7 +185,9 @@ document.addEventListener( 'keyup', onKeyUp );
 			{
 				ball.position.x = 0;
 				ball.position.z = 0;
-				plane_0.material.color.setHex(0xffffff);
+				squareMesh.material.color.setHex(0xffffff);
+				pos_history_x = [0,0,0,0,0,0,0,0];
+				pos_history_z = [0,0,0,0,0,0,0,0];
 				bar_left.position.x = Left_bar_pos_x;
 				bar_left.position.z = 0;
 				bar_right.position.x = Right_bar_pos_x;
@@ -340,18 +196,74 @@ document.addEventListener( 'keyup', onKeyUp );
 					BallAngle = Math.PI;
 				else
 					BallAngle = M_2PI;
-				SpeedMultiplier = 0.2;
+				SpeedMultiplier = 0.4;
 				LeftHit = 0;
 				RighHit = 0;
 			}
-
+			//var	i = 1;
+			const material_msh = new THREE.MeshBasicMaterial({
+				color: 0xffffff,
+				side: THREE.DoubleSide,
+				depthWrite: false
+			});
+			//====================================MOVE BALL==========================================
 			function moveBall()
 			{
 				pos_history += 1;
 				if (pos_history == 8)
 					pos_history = 0;
-				plane_array[pos_history].position.x = ball.position.x;
-				plane_array[pos_history].position.z = ball.position.z;
+
+
+					pos_history_x.unshift(ball.position.x);
+					pos_history_z.unshift(ball.position.z);
+					pos_history_x.pop();
+					pos_history_z.pop();
+				// pos_history_x[pos_history] = ball.position.x;
+				// pos_history_z[pos_history] = ball.position.z;
+
+				if (squareMesh != null)
+					scene.remove(squareMesh);
+
+	const square = new THREE.Shape();
+
+	var i = 1;
+
+	square.moveTo(pos_history_x[0], pos_history_z[0] + 0.5);
+	// square.lineTo(pos_history_x[0], pos_history_z[0] - 0.5);
+
+	while (i < 8)
+	{
+		square.lineTo(pos_history_x[i], pos_history_z[i] + 0.5);
+		
+		i++;
+	}
+	i = 7;
+	while (i >= 0)
+	{
+		square.lineTo(pos_history_x[i], pos_history_z[i] - 0.5);
+		i -= 1;
+	}
+
+	// square.lineTo(pos_history_x[i], pos_history_z[1] - 0.5);
+	// 	square.lineTo(pos_history_x[i], pos_history_z[1] + 0.5);
+	// 	square.lineTo(pos_history_x[i], pos_history_z[2] + 0.5);
+	// 	square.lineTo(pos_history_x[i], pos_history_z[2] - 0.5);
+	// 	square.lineTo(pos_history_x[i], pos_history_z[3] - 0.5);
+	// 	square.lineTo(pos_history_x[i], pos_history_z[3] + 0.5);
+	// 	square.lineTo(pos_history_x[i], pos_history_z[4] + 0.5);
+	// 	square.lineTo(pos_history_x[i], pos_history_z[4] - 0.5);
+
+
+
+	const geometry_msh = new THREE.ShapeGeometry(square);
+
+	squareMesh = new THREE.Mesh(geometry_msh, material_msh);
+
+	scene.add(squareMesh);
+	squareMesh.rotation.x += M_PI_2;
+	geometry_msh.dispose();
+
+
 				
 				ball.position.x += Math.cos(BallAngle) * SpeedMultiplier;
 				ball.position.z += (Math.sin(BallAngle) * -1) * SpeedMultiplier;
@@ -370,7 +282,7 @@ document.addEventListener( 'keyup', onKeyUp );
 							BallAngle += M_2PI;
 						if (SpeedMultiplier < 1)
 							SpeedMultiplier += 0.02;
-						plane_0.material.color.setHex(0x00c8ff);
+						squareMesh.material.color.setHex(0x00c8ff);
 					}
 					RightHit = 0;
 				}
@@ -388,7 +300,7 @@ document.addEventListener( 'keyup', onKeyUp );
 						BallAngle += M_2PI;
 					if (SpeedMultiplier < 1)
 						SpeedMultiplier += 0.02;
-					plane_0.material.color.setHex(0xffea022);
+					squareMesh.material.color.setHex(0xffea022);
 					}
 					LeftHit = 0;
 				}
@@ -419,40 +331,28 @@ document.addEventListener( 'keyup', onKeyUp );
 			const animate = function ()
 			{
 				requestAnimationFrame( animate );
-				//setupKeyControls();
 				moveBall();
-
-			if (UpArrow == true)
-			{
-				if (bar_right.position.z - 4 > edge_top.position.z + 0.5)
-    		    	bar_right.position.z -= 0.5;
-    		}
-			if (Wkey == true)
-			{
-				if (bar_left.position.z - 4 > edge_top.position.z + 0.5)
-    		    	bar_left.position.z -= 0.5;
-			}
-			if (DownArrow == true)
-			{
-				if (bar_right.position.z + 4 < edge_bot.position.z - 0.5)
-    		    	bar_right.position.z += 0.5;
-			}
-			if (Skey == true)
-			{
-				if (bar_left.position.z + 4 < edge_bot.position.z - 0.5)
-					bar_left.position.z += 0.5;
-			}
-	
-
-				//camera.rotation.x -= 0.01;
-
-				// cube.rotation.x += 0.01;
-				// cube.rotation.y += 0.01;
-
-				// line.rotation.x += 0.01;
-				// line.rotation.y += 0.01;
-				// line.rotation.z += 0.01;
-
+				
+				if (UpArrow == true)
+				{
+					if (bar_right.position.z - 4 > edge_top.position.z + 0.5)
+    			    	bar_right.position.z -= 0.5;
+    			}
+				if (Wkey == true)
+				{
+					if (bar_left.position.z - 4 > edge_top.position.z + 0.5)
+    			    	bar_left.position.z -= 0.5;
+				}
+				if (DownArrow == true)
+				{
+					if (bar_right.position.z + 4 < edge_bot.position.z - 0.5)
+    			    	bar_right.position.z += 0.5;
+				}
+				if (Skey == true)
+				{
+					if (bar_left.position.z + 4 < edge_bot.position.z - 0.5)
+						bar_left.position.z += 0.5;
+				}
 				//Lance le rendu de la scene
 				renderer.render( scene, camera );
 			};
