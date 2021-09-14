@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/14 12:29:31 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/14 13:10:33 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -110,9 +110,8 @@
 			scene.add (ball);
 
 			var history_depth = 15;
-			var pos_history_x = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-			var pos_history_z = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-			var	pos_history = -1 ;
+			var pos_history_x = [0,0];
+			var pos_history_z = [0,0];
 
 			var trainee;
 			var	trainee_geo;
@@ -196,8 +195,8 @@ document.addEventListener( 'keyup', onKeyUp );
 				ball.position.x = 0;
 				ball.position.z = 0;
 				trainee_msh[0].material.color.setHex(0xffffff);
-				pos_history_x = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-				pos_history_z = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+				pos_history_x = [0,0];
+				pos_history_z = [0,0];
 				bar_left.position.x = Left_bar_pos_x;
 				bar_left.position.z = 0;
 				bar_right.position.x = Right_bar_pos_x;
@@ -223,20 +222,10 @@ document.addEventListener( 'keyup', onKeyUp );
 			var old_trainee_pos_z = 0;
 			function moveBall()
 			{
-				pos_history += 1;
-				if (pos_history == history_depth)
-					pos_history = 0;
-
-
 				pos_history_x.unshift(ball.position.x);
 				pos_history_z.unshift(ball.position.z);
 				pos_history_x.pop();
 				pos_history_z.pop();
-				// pos_history_x[pos_history] = ball.position.x;
-				// pos_history_z[pos_history] = ball.position.z;
-
-				// if (squareMesh != null)
-				// 	scene.remove(squareMesh);
 
 				if (trainee_msh[history_depth] != null)
 				{
@@ -258,47 +247,8 @@ document.addEventListener( 'keyup', onKeyUp );
 				old_trainee_pos_z = pos_history_z[0 + 1] + 0.25;
 				trainee_geo = new THREE.ShapeGeometry(trainee);
 				trainee_msh.unshift (new THREE.Mesh(trainee_geo, material_msh));
-
-
 				trainee_msh[0].rotation.x += M_PI_2;
-				// trainee_msh[0].rotation.y += BallAngle;
 				scene.add(trainee_msh[0]);
-				// trainee_msh[0].rotation.x += M_PI_2;
-				// trainee_msh[0].rotation.x += BallAngle;
-				// trainee_msh[0].rotation.x += M_PI_2;
-				// trainee_msh[0].rotation.y = BallAngle - M_PI;
-				// trainee_geo.dispose();
-			
-	// const square = new THREE.Shape();
-
-	// var i = 1;
-
-	// square.moveTo(pos_history_x[0], pos_history_z[0] + 0.5);
-
-	// while (i < history_depth)
-	// {
-	// 	square.lineTo(pos_history_x[i], pos_history_z[i] + 0.5);
-		
-		
-	// 	i++;
-	// }
-	// i = history_depth - 1;
-	// while (i >= 0)
-	// {
-	// 	square.lineTo(pos_history_x[i], pos_history_z[i] - 0.5);
-	// 	i -= 1;
-	// }
-
-
-
-	// const geometry_msh = new THREE.ShapeGeometry(square);
-
-	// squareMesh = new THREE.Mesh(geometry_msh, material_msh);
-
-	// scene.add(squareMesh);
-	// squareMesh.rotation.x += M_PI_2;
-	// geometry_msh.dispose();
-
 
 				
 				ball.position.x += Math.cos(BallAngle) * SpeedMultiplier;
