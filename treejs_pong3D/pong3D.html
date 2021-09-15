@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/15 14:03:00 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/15 15:08:40 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -36,6 +36,7 @@
 			var M_PI_2 = Math.PI / 2;
 			var M_3PI_2 = 3 * (Math.PI / 2);
 			var	SpeedMultiplier = 0.4;
+			var SpeedLimit = 1.4;
 			var	LeftHit = 0;
 			var RightHit = 0;
 			var PosDiff = 0;
@@ -60,7 +61,7 @@
 			//Material FLAT qui ne réagit pas à la lumière :
 			//const material_bar_left = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
 			//Matérial Dynamique qui y réagit :
-			const material_bar_left = new THREE.MeshStandardMaterial( { color: 0x00c8ff } );
+			const material_bar_left = new THREE.MeshStandardMaterial( { color: 0xffffff } );
 			//On crée la mesh en utiliant la géométrie et le mat
 			const bar_left = new THREE.Mesh( geometry_bar, material_bar_left );
 
@@ -68,19 +69,20 @@
 			//Material FLAT qui ne réagit pas à la lumière :
 			//const material_bar_right = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
 			//Matérial Dynamique qui y réagit :
-			const material_bar_right = new THREE.MeshStandardMaterial( { color: 0xfea022 } );
+			const material_bar_right = new THREE.MeshStandardMaterial( { color: 0xffffff } );
 			//On crée la mesh en utiliant la géométrie et le mat
 			const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
 			//On l'ajoute à la scène
 
 
+			const outline_geometry_bar = new THREE.BoxGeometry(1.2, 1.2, 8.2);
 			var LeftoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0x00c8ff, side: THREE.BackSide } );
-			var LeftoutlineMesh = new THREE.Mesh( geometry_bar, LeftoutlineMaterial );
+			var LeftoutlineMesh = new THREE.Mesh( outline_geometry_bar, LeftoutlineMaterial );
 			LeftoutlineMesh.scale.multiplyScalar(1.05);
 			scene.add( LeftoutlineMesh );
 
 			var RightoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xfea022, side: THREE.BackSide } );
-			var RightoutlineMesh = new THREE.Mesh( geometry_bar, RightoutlineMaterial );
+			var RightoutlineMesh = new THREE.Mesh( outline_geometry_bar, RightoutlineMaterial );
 			RightoutlineMesh.scale.multiplyScalar(1.05);
 			scene.add( RightoutlineMesh );
 
@@ -112,6 +114,23 @@
 			edge_right.position.x = 30;
 			scene.add( edge_top, edge_bot, edge_left, edge_right );
 
+			var EdgeTopoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
+			const outline_geometry_edge_top = new THREE.BoxGeometry(61, 1.5, 1.5);
+			var EdgeTopoutlineMesh = new THREE.Mesh( outline_geometry_edge_top, EdgeTopoutlineMaterial );
+			EdgeTopoutlineMesh.position.z = edge_top.position.z;
+
+			var EdgeBotoutlineMesh = new THREE.Mesh( outline_geometry_edge_top, EdgeTopoutlineMaterial );
+			EdgeBotoutlineMesh.position.z = edge_bot.position.z;
+
+			var EdgeSideoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
+			const outline_geometry_edge_side = new THREE.BoxGeometry(1.5, 1.5, 41.5);
+			var EdgeLeftoutlineMesh = new THREE.Mesh( outline_geometry_edge_side, EdgeSideoutlineMaterial );
+			EdgeLeftoutlineMesh.position.x = edge_left.position.x;
+
+			var EdgeRightoutlineMesh = new THREE.Mesh( outline_geometry_edge_side, EdgeSideoutlineMaterial );
+			EdgeRightoutlineMesh.position.x = edge_right.position.x;	
+
+			scene.add( EdgeTopoutlineMesh, EdgeBotoutlineMesh, EdgeLeftoutlineMesh, EdgeRightoutlineMesh );
 
 			//Ball
 			const geometry_ball = new THREE.BoxGeometry(1, 1, 1);
@@ -119,11 +138,10 @@
 			const ball = new THREE.Mesh( geometry_ball, ball_m );
 			
 
-			var BalloutlineMaterial= new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
+			var BalloutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
 			var BalloutlineMesh = new THREE.Mesh( geometry_ball, BalloutlineMaterial );
 			BalloutlineMesh.position = ball.position;
 			BalloutlineMesh.scale.multiplyScalar(1.2);
-			scene.add( BalloutlineMesh );
 
 			scene.add (ball, BalloutlineMesh);
 
@@ -136,18 +154,18 @@
 			var trainee;
 			var	trainee_geo;
 			var	trainee_msh = [];
-			var x = 15;
-			while (x > 0)
-			{
-				trainee_msh.unshift(null);
-				x--;
-			}
 
 			// Point Light
-			const pointLight = new THREE.PointLight(0xffffff, 2, 50);
+			// const pointLight = new THREE.PointLight(0xffffff, 2, 50);
+			// // // //On change sa position en x, y, et z
+			// pointLight.position.set(0, 10, 0);
+
+			//BallLight
+			const BallLight = new THREE.PointLight(0xffffff, 20, 10);
 			// //On change sa position en x, y, et z
-			pointLight.position.set(0, 10, 0);
-			scene.add(pointLight);
+			BallLight.position.set(0, 4, 0);
+
+			scene.add(BallLight);
 
 			//Grid Helper
 			const gridHelper = new THREE.GridHelper(200, 50);
@@ -164,6 +182,7 @@
 			let DownArrow = false;
 			let Wkey = false;
 			let Skey = false;
+
 
 const onKeyDown = function ( event )
 {
@@ -218,6 +237,7 @@ document.addEventListener( 'keyup', onKeyUp );
 				BalloutlineMesh.position.z = 0;
 				trainee_msh[0].material.color.setHex(0xffffff);
 				BalloutlineMesh.material.color.setHex(0xffffff);
+				BallLight.color.setHex(0xffffff);
 				pos_history_x.unshift(0);
 				pos_history_z.unshift(0);
 				pos_history_x.pop();
@@ -284,6 +304,8 @@ document.addEventListener( 'keyup', onKeyUp );
 				ball.position.z += (Math.sin(BallAngle) * -1) * SpeedMultiplier;
 				BalloutlineMesh.position.x = ball.position.x;
 				BalloutlineMesh.position.z = ball.position.z;
+				BallLight.position.x = ball.position.x;
+				BallLight.position.z = ball.position.z;
 				//  Est dans la barre de gauche en X                 (est dans la barre en Y)
 				//Une barre fait 8 de hauteur
 				if (ball.position.x >= bar_left.position.x - 1 && ball.position.x <= bar_left.position.x + 1 && (ball.position.z - 0.5 <= bar_left.position.z + 4 && ball.position.z + 0.5 >= bar_left.position.z - 4))
@@ -297,10 +319,11 @@ document.addEventListener( 'keyup', onKeyUp );
 							BallAngle -= M_2PI;
 						else if (BallAngle < 0)
 							BallAngle += M_2PI;
-						if (SpeedMultiplier < 1)
+						if (SpeedMultiplier < SpeedLimit)
 							SpeedMultiplier += 0.02;
 							trainee_msh[0].material.color.setHex(0x00c8ff);
 							BalloutlineMesh.material.color.setHex(0x00c8ff);
+							BallLight.color.setHex(0x00c8ff);
 					}
 					RightHit = 0;
 				}
@@ -316,10 +339,11 @@ document.addEventListener( 'keyup', onKeyUp );
 						BallAngle -= M_2PI;
 					else if (BallAngle < 0)
 						BallAngle += M_2PI;
-					if (SpeedMultiplier < 1)
+					if (SpeedMultiplier < SpeedLimit)
 						SpeedMultiplier += 0.02;
 						trainee_msh[0].material.color.setHex(0xffea022);
 						BalloutlineMesh.material.color.setHex(0xffea022);
+						BallLight.color.setHex(0xffea022);
 					}
 					LeftHit = 0;
 				}
