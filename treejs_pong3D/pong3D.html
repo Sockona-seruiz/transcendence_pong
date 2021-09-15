@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/14 13:10:33 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/15 14:03:00 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -21,6 +21,7 @@
 	</head>
 	<body>
 		<script src="js/three.js"></script>
+
 		<script>
 			var Ball_pos_x = 0;
 			var Ball_pos_z = 0;
@@ -62,10 +63,7 @@
 			const material_bar_left = new THREE.MeshStandardMaterial( { color: 0x00c8ff } );
 			//On crée la mesh en utiliant la géométrie et le mat
 			const bar_left = new THREE.Mesh( geometry_bar, material_bar_left );
-	
-			//On crée la géométrie
-			const geometry = new THREE.BoxGeometry(1, 1, 8);
-			//Selection du material
+
 
 			//Material FLAT qui ne réagit pas à la lumière :
 			//const material_bar_right = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
@@ -75,13 +73,25 @@
 			const bar_right = new THREE.Mesh( geometry_bar, material_bar_right );
 			//On l'ajoute à la scène
 
+
+			var LeftoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0x00c8ff, side: THREE.BackSide } );
+			var LeftoutlineMesh = new THREE.Mesh( geometry_bar, LeftoutlineMaterial );
+			LeftoutlineMesh.scale.multiplyScalar(1.05);
+			scene.add( LeftoutlineMesh );
+
+			var RightoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xfea022, side: THREE.BackSide } );
+			var RightoutlineMesh = new THREE.Mesh( geometry_bar, RightoutlineMaterial );
+			RightoutlineMesh.scale.multiplyScalar(1.05);
+			scene.add( RightoutlineMesh );
+
 			Left_bar_pos_x = -25;
 			bar_left.position.x = Left_bar_pos_x ;
-			
+			LeftoutlineMesh.position.x = bar_left.position.x;
+
 			Right_bar_pos_x = 25;
 			bar_right.position.x = Right_bar_pos_x;
-			scene.add( bar_left );
-			scene.add( bar_right );
+			RightoutlineMesh.position.x = bar_right.position.x;
+			scene.add( bar_left, bar_right, LeftoutlineMesh, RightoutlineMesh);
 
 
 			//Creation de l'arène
@@ -105,9 +115,19 @@
 
 			//Ball
 			const geometry_ball = new THREE.BoxGeometry(1, 1, 1);
-			const ball_m = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false } );
+			const ball_m = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false} );
 			const ball = new THREE.Mesh( geometry_ball, ball_m );
-			scene.add (ball);
+			
+
+			var BalloutlineMaterial= new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
+			var BalloutlineMesh = new THREE.Mesh( geometry_ball, BalloutlineMaterial );
+			BalloutlineMesh.position = ball.position;
+			BalloutlineMesh.scale.multiplyScalar(1.2);
+			scene.add( BalloutlineMesh );
+
+			scene.add (ball, BalloutlineMesh);
+
+
 
 			var history_depth = 15;
 			var pos_history_x = [0,0];
@@ -194,13 +214,22 @@ document.addEventListener( 'keyup', onKeyUp );
 			{
 				ball.position.x = 0;
 				ball.position.z = 0;
+				BalloutlineMesh.position.x = 0;
+				BalloutlineMesh.position.z = 0;
 				trainee_msh[0].material.color.setHex(0xffffff);
-				pos_history_x = [0,0];
-				pos_history_z = [0,0];
+				BalloutlineMesh.material.color.setHex(0xffffff);
+				pos_history_x.unshift(0);
+				pos_history_z.unshift(0);
+				pos_history_x.pop();
+				pos_history_z.pop();
 				bar_left.position.x = Left_bar_pos_x;
 				bar_left.position.z = 0;
+				LeftoutlineMesh.position.x = bar_left.position.x;
+				LeftoutlineMesh.position.z = bar_left.position.z;
 				bar_right.position.x = Right_bar_pos_x;
 				bar_right.position.z = 0;
+				RightoutlineMesh.position.x = bar_right.position.x;
+				RightoutlineMesh.position.z = bar_right.position.z;
 				if (x == 0)
 					BallAngle = Math.PI;
 				else
@@ -253,6 +282,8 @@ document.addEventListener( 'keyup', onKeyUp );
 				
 				ball.position.x += Math.cos(BallAngle) * SpeedMultiplier;
 				ball.position.z += (Math.sin(BallAngle) * -1) * SpeedMultiplier;
+				BalloutlineMesh.position.x = ball.position.x;
+				BalloutlineMesh.position.z = ball.position.z;
 				//  Est dans la barre de gauche en X                 (est dans la barre en Y)
 				//Une barre fait 8 de hauteur
 				if (ball.position.x >= bar_left.position.x - 1 && ball.position.x <= bar_left.position.x + 1 && (ball.position.z - 0.5 <= bar_left.position.z + 4 && ball.position.z + 0.5 >= bar_left.position.z - 4))
@@ -269,6 +300,7 @@ document.addEventListener( 'keyup', onKeyUp );
 						if (SpeedMultiplier < 1)
 							SpeedMultiplier += 0.02;
 							trainee_msh[0].material.color.setHex(0x00c8ff);
+							BalloutlineMesh.material.color.setHex(0x00c8ff);
 					}
 					RightHit = 0;
 				}
@@ -287,6 +319,7 @@ document.addEventListener( 'keyup', onKeyUp );
 					if (SpeedMultiplier < 1)
 						SpeedMultiplier += 0.02;
 						trainee_msh[0].material.color.setHex(0xffea022);
+						BalloutlineMesh.material.color.setHex(0xffea022);
 					}
 					LeftHit = 0;
 				}
@@ -322,22 +355,34 @@ document.addEventListener( 'keyup', onKeyUp );
 				if (UpArrow == true)
 				{
 					if (bar_right.position.z - 4 > edge_top.position.z + 0.5)
+					{
     			    	bar_right.position.z -= 0.5;
-    			}
+						RightoutlineMesh.position.z = bar_right.position.z;
+					}
+				}
 				if (Wkey == true)
 				{
 					if (bar_left.position.z - 4 > edge_top.position.z + 0.5)
+					{
     			    	bar_left.position.z -= 0.5;
+						LeftoutlineMesh.position.z = bar_left.position.z;
+					}
 				}
 				if (DownArrow == true)
 				{
 					if (bar_right.position.z + 4 < edge_bot.position.z - 0.5)
-    			    	bar_right.position.z += 0.5;
+    			    {
+						bar_right.position.z += 0.5;
+						RightoutlineMesh.position.z = bar_right.position.z;
+					}
 				}
 				if (Skey == true)
 				{
 					if (bar_left.position.z + 4 < edge_bot.position.z - 0.5)
+					{
 						bar_left.position.z += 0.5;
+						LeftoutlineMesh.position.z = bar_left.position.z;
+					}
 				}
 				//Lance le rendu de la scene
 				renderer.render( scene, camera );
