@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/20 15:34:28 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/20 16:15:27 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -248,7 +248,7 @@ var planeGeometry = new THREE.PlaneGeometry(400, 200, 40, 20);
 	var planeMaterial = new THREE.MeshBasicMaterial({
 		// color: 0x6904ce,
 		color: 0xffffff,
-		side: THREE.DoubleSide,
+		// side: THREE.DoubleSide,
 		wireframe: true
     });
     
@@ -257,7 +257,7 @@ var planeGeometry = new THREE.PlaneGeometry(400, 200, 40, 20);
 	plane.rotation.x += M_PI_2;
 	plane.position.set(0, -8, -10);
 	scene.add(plane);
-    
+
 	function modulate(val, minVal, maxVal, outMin, outMax) {
 	var fr = fractionate(val, minVal, maxVal);
 	var delta = outMax - outMin;
@@ -426,7 +426,7 @@ function makeRoughGround(mesh, distortionFr) {
 			scene.add( bar_left, bar_right, LeftoutlineMesh, RightoutlineMesh);
 
 
-			//Creation de l'arène
+			//Arena =============================================================
 			const geometry_edge_top = new THREE.BoxGeometry(60, 1, 1);
 			const geometry_edge_side = new THREE.BoxGeometry(1, 1, 41);
 
@@ -466,6 +466,22 @@ function makeRoughGround(mesh, distortionFr) {
 			EdgeLeftoutlineMesh.layers.enable( BLOOM_SCENE );
 			EdgeRightoutlineMesh.layers.enable( BLOOM_SCENE );
 			scene.add( EdgeTopoutlineMesh, EdgeBotoutlineMesh, EdgeLeftoutlineMesh, EdgeRightoutlineMesh );
+
+			var arena_floor_geo = new THREE.PlaneGeometry(61, 40, 2, 2);
+	var arena_floor_Material = new THREE.MeshBasicMaterial({
+		// color: 0x6904ce,
+		color: 0x000000,
+		// side: THREE.DoubleSide,
+		transparent: true,
+		opacity: 0.8,
+		wireframe: false
+    });
+    
+	var arena_floor = new THREE.Mesh(arena_floor_geo, arena_floor_Material);
+    // plane.rotation.x = -0.5 * Math.PI;
+	arena_floor.rotation.x -= M_PI_2;
+	arena_floor.position.set(0, -1, 0);
+	scene.add(arena_floor);
 
 			//Ball
 			const geometry_ball = new THREE.BoxGeometry(1, 1, 1);
@@ -603,7 +619,7 @@ document.addEventListener( 'keyup', onKeyUp );
 			const material_msh = new THREE.MeshBasicMaterial({
 				color: 0xffffff,
 				side: THREE.DoubleSide,
-				depthWrite: false
+				// depthWrite: false
 			});
 			//====================================MOVE BALL==========================================
 			//Faire plusieurs mesh et dessiner des carrés entre les points de l'historique
@@ -760,7 +776,6 @@ function avg(arr){
 				var upperAvg = avg(upperHalfArray);
 				var upperAvgFr = upperAvg / upperHalfArray.length;
 				updateAudioVisualizer();
-				// makeRoughGround(plane, modulate(averageFreq, 0, 1, 0.5, 4));
 
 				let vertices = plane.geometry.attributes.position.array;
 				for(let i = 0; i < plane.geometry.attributes.position.count; i++){
@@ -770,36 +785,10 @@ function avg(arr){
 
 				}
 				plane.geometry.attributes.position.needsUpdate = true;
+				plane.geometry.verticesNeedUpdate = true;
+				plane.geometry.normalsNeedUpdate = true;
+				plane.geometry.computeVertexNormals();
 
-				// const positionAttribute = plane.geometry.getAttribute( 'position' );
-				// const vertex = new THREE.Vector3();
-				// for ( let i = 0; i < positionAttribute.count; i ++ ) {
-
-				// vertex.fromBufferAttribute( positionAttribute, i ); // read vertex
-				// // var amp = 2;
-				// // 		 var time = Date.now();
-				// // 		 var distance = modulate(averageFreq, 0, 1, 0.5, 4) * amp;
-				// 		 vertex.z += 1;
-				// // do something with vertex
-
-				// //plane.geometry.setXYZ( i, vertex.x, vertex.y, vertex.z );
-				// positionAttribute.setXYZ( i, vertex.x, vertex.y, vertex.z );
-				// }
-
-
-
-
-
-				// plane.geometry.vertices.forEach(function (vertex, i) {
-				// 		 var amp = 2;
-				// 		 var time = Date.now();
-				// 		 var distance = (noise.noise2D(vertex.x + time * 0.0003, vertex.y + time * 0.0001) + 0) * modulate(averageFreq, 0, 1, 0.5, 4) * amp;
-				// 		 vertex.z = distance;
-				// 	});
-					plane.geometry.verticesNeedUpdate = true;
-					plane.geometry.normalsNeedUpdate = true;
-					plane.geometry.computeVertexNormals();
-					// plane.geometry.computeFaceNormals();
 				
 				
 				if (UpArrow == true)
@@ -834,105 +823,7 @@ function avg(arr){
 						LeftoutlineMesh.position.z = bar_left.position.z;
 					}
 				}
-
-				// let vertexpos = 0;
-				// let colorpos = 0;
-				// let numConnected = 0;
-
-				// for ( let i = 0; i < particleCount; i ++ )
-				// 	particlesData[ i ].numConnections = 0;
-
-				// for ( let i = 0; i < particleCount; i ++ ) {
-
-				// 	// get the particle
-				// 	const particleData = particlesData[ i ];
-					
-				// 	if (point_pos_index >= point_pos_len)
-				// 		point_pos_index = 0;
-					
-				// 	particlePositions[ i * 3 ] += point_pos[point_pos_index];
-				// 	particlePositions[ i * 3 + 1 ] += point_pos[point_pos_index];
-				// 	particlePositions[ i * 3 + 2 ] += point_pos[point_pos_index];
-
-					// particlePositions[ i * 3 ] += particleData.velocity.x;
-					// particlePositions[ i * 3 + 1 ] += particleData.velocity.y;
-					// particlePositions[ i * 3 + 2 ] += particleData.velocity.z;
-
-					// if ( particlePositions[ i * 3 + 1 ] < - rHalf || particlePositions[ i * 3 + 1 ] > rHalf )
-					// 	particleData.velocity.y = - particleData.velocity.y;
-
-					// if ( particlePositions[ i * 3 ] < - rHalf || particlePositions[ i * 3 ] > rHalf )
-					// 	particleData.velocity.x = - particleData.velocity.x;
-
-					// if ( particlePositions[ i * 3 + 2 ] < - rHalf || particlePositions[ i * 3 + 2 ] > rHalf )
-					// 	particleData.velocity.z = - particleData.velocity.z;
-
-					// if ( effectController.limitConnections && particleData.numConnections >= effectController.maxConnections )
-					// 	continue;
-
-					// Check collision
-					// for ( let j = i + 1; j < particleCount; j ++ ) {
-
-					// 	const particleDataB = particlesData[ j ];
-					// 	if ( effectController.limitConnections && particleDataB.numConnections >= effectController.maxConnections )
-					// 		continue;
-
-					// 	const dx = particlePositions[ i * 3 ] - particlePositions[ j * 3 ];
-					// 	const dy = particlePositions[ i * 3 + 1 ] - particlePositions[ j * 3 + 1 ];
-					// 	const dz = particlePositions[ i * 3 + 2 ] - particlePositions[ j * 3 + 2 ];
-					// 	const dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
-
-					// 	// if ( dist < effectController.minDistance ) {
-
-					// 	// 	particleData.numConnections ++;
-					// 	// 	particleDataB.numConnections ++;
-
-					// 	// 	const alpha = 1.0 - dist / effectController.minDistance;
-
-					// 	// 	positions[ vertexpos ++ ] = particlePositions[ i * 3 ];
-					// 	// 	positions[ vertexpos ++ ] = particlePositions[ i * 3 + 1 ];
-					// 	// 	positions[ vertexpos ++ ] = particlePositions[ i * 3 + 2 ];
-
-					// 	// 	positions[ vertexpos ++ ] = particlePositions[ j * 3 ];
-					// 	// 	positions[ vertexpos ++ ] = particlePositions[ j * 3 + 1 ];
-					// 	// 	positions[ vertexpos ++ ] = particlePositions[ j * 3 + 2 ];
-
-					// 	// 	colors[ colorpos ++ ] = alpha;
-					// 	// 	colors[ colorpos ++ ] = alpha;
-					// 	// 	colors[ colorpos ++ ] = alpha;
-
-					// 	// 	colors[ colorpos ++ ] = alpha;
-					// 	// 	colors[ colorpos ++ ] = alpha;
-					// 	// 	colors[ colorpos ++ ] = alpha;
-
-					// 	// 	numConnected ++;
-
-					// 	// }
-
-					// }
-
-				// }
-
-
-				// linesMesh.geometry.setDrawRange( 0, numConnected * 2 );
-				// linesMesh.geometry.attributes.position.needsUpdate = true;
-				// linesMesh.geometry.attributes.color.needsUpdate = true;
-
-				// pointCloud.geometry.attributes.position.needsUpdate = true;
-
-
-
-
-
-
-
-
-				//Lance le rendu de la scene
-				// renderer.render( scene, camera );
-				
-				// renderBloom( true );
 				bloomComposer.render();
-				// render the entire scene, then render bloom scene on top
 				finalComposer.render();
 			};
 
