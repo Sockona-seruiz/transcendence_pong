@@ -6,9 +6,9 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/17 15:28:35 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/20 15:34:28 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
-<!-- *********************************************************************** 
+<!-- *********************************************************************** -->
 
 <!-- ruby -run -e httpd . -p 8080 -->
 
@@ -60,6 +60,7 @@
 import * as THREE from './three.js-dev/build/three.module.js';
 
 import { GUI } from './three.js-dev/examples/jsm/libs/dat.gui.module.js';
+import Stats from './three.js-dev/examples/jsm/libs/stats.module.js';
 
 import { OrbitControls } from './three.js-dev/examples/jsm/controls/OrbitControls.js';
 import { EffectComposer } from './three.js-dev/examples/jsm/postprocessing/EffectComposer.js';
@@ -75,6 +76,7 @@ import { UnrealBloomPass } from './three.js-dev/examples/jsm/postprocessing/Unre
 			//Renderer
 			const renderer = new THREE.WebGLRenderer( { antialias: true } );
 			const scene = new THREE.Scene();
+			scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
 
 //===================================================================================================================================================
 const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
@@ -168,8 +170,8 @@ window.onresize = function () {
 			var M_2PI = 2 * Math.PI;
 			var M_PI_2 = Math.PI / 2;
 			var M_3PI_2 = 3 * (Math.PI / 2);
-			var	SpeedMultiplier = 0.1;
-			var SpeedLimit = 0.8;
+			var	SpeedMultiplier = 0.4;
+			var SpeedLimit = 1.4;
 			var	LeftHit = 0;
 			var RightHit = 0;
 			var PosDiff = 0;
@@ -198,7 +200,8 @@ const analyser = new THREE.AudioAnalyser(audio, fftSize);
 // analyser.getFrequencyData() returns array of half size of fftSize.
 // ex. if fftSize = 2048, array size will be 1024.
 // data includes magnitude of low ~ high frequency.
-const data = analyser.getFrequencyData();
+var data = analyser.getFrequencyData();
+var averageFreq = analyser.getAverageFrequency();
 
 var AudioMeshArray_Left = [];
 var AudioMeshArray_Right = [];
@@ -211,7 +214,7 @@ const material_audio = new THREE.MeshBasicMaterial( { color: 0x000000 } );
 const geometry_audio_outline = new THREE.BoxGeometry(1.2, 1.2, 1.2);
 	const material_audio_outline = new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
 	const material_audio_outline_left = new THREE.MeshBasicMaterial( { color: 0x00c8ff, side: THREE.BackSide } );
-	const material_audio_outline_right = new THREE.MeshBasicMaterial( { color: 0xfea022, side: THREE.BackSide } );
+	const material_audio_outline_right = new THREE.MeshBasicMaterial( { color: 0xff9900, side: THREE.BackSide } );
 
 for (let i = 0, len = data.length; i < len; i++)
 {
@@ -239,12 +242,144 @@ for (let i = 0, len = data.length; i < len; i++)
 	scene.add( AudioMeshArray_Left[0], AudioMeshArray_Right[0], AudioMeshArray_outline_Left[0], AudioMeshArray_outline_Right[0]);
 }
 
+//Plane =========================================================================
+
+var planeGeometry = new THREE.PlaneGeometry(400, 200, 40, 20);
+	var planeMaterial = new THREE.MeshBasicMaterial({
+		// color: 0x6904ce,
+		color: 0xffffff,
+		side: THREE.DoubleSide,
+		wireframe: true
+    });
+    
+	var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    // plane.rotation.x = -0.5 * Math.PI;
+	plane.rotation.x += M_PI_2;
+	plane.position.set(0, -8, -10);
+	scene.add(plane);
+    
+	function modulate(val, minVal, maxVal, outMin, outMax) {
+	var fr = fractionate(val, minVal, maxVal);
+	var delta = outMax - outMin;
+	return outMin + (fr * delta);
+	}
+
+function makeRoughGround(mesh, distortionFr) {
+        mesh.geometry.vertices.forEach(function (vertex, i) {
+            var amp = 2;
+            var time = Date.now();
+            var distance = (noise.noise2D(vertex.x + time * 0.0003, vertex.y + time * 0.0001) + 0) * distortionFr * amp;
+            vertex.z = distance;
+        });
+        mesh.geometry.verticesNeedUpdate = true;
+        mesh.geometry.normalsNeedUpdate = true;
+        mesh.geometry.computeVertexNormals();
+        mesh.geometry.computeFaceNormals();
+		return(0);
+    }
+
+	function fractionate(val, minVal, maxVal) {
+    return (val - minVal)/(maxVal - minVal);
+}
+
+	// var ambientLight = new THREE.AmbientLight(0xaaaaaa);
+    // scene.add(ambientLight);
 
 
-// for (let i = 0, len = data.length; i < len; i++)
-// {
-// 	AudioMeshArray[i].position.y = data[i];
-// }
+//PARTICLES ======================================================================
+
+// const particlesData = [];
+// let container;
+// 			let positions, colors;
+// 			let particles;
+// 			let pointCloud;
+// 			let particlePositions;
+// 			let linesMesh;
+
+// 			const maxParticleCount = 1000;
+// 			let particleCount = 500;
+// 			const r = 200;
+// 			const rHalf = r / 2;
+
+
+// const effectController = {
+// 				showDots: true,
+// 				showLines: true,
+// 				minDistance: 20,
+// 				limitConnections: false,
+// 				maxConnections: 20,
+// 				particleCount: 500
+// 			};
+
+// 			const group = new THREE.Group();
+// 				scene.add( group );
+
+// 			// container = document.getElementById( 'container' );
+
+// 			const helper = new THREE.BoxHelper( new THREE.Mesh( new THREE.BoxGeometry( r + 180 , 1, r + 50 ) ) );
+// 				helper.material.color.setHex( 0xff0000 );
+// 				helper.material.blending = THREE.AdditiveBlending;
+// 				helper.material.transparent = true;
+// 				group.add( helper );
+
+// 				const segments = maxParticleCount * maxParticleCount;
+
+// 				positions = new Float32Array( segments * 3 );
+// 				colors = new Float32Array( segments * 3 );
+
+// 				const pMaterial = new THREE.PointsMaterial( {
+// 					color: 0xFFFFFF,
+// 					size: 3,
+// 					blending: THREE.AdditiveBlending,
+// 					transparent: true,
+// 					sizeAttenuation: false
+// 				} );
+
+// 				particles = new THREE.BufferGeometry();
+// 				particlePositions = new Float32Array( maxParticleCount * 3 );
+
+// 				for ( let i = 0; i < maxParticleCount; i ++ ) {
+
+// 					const x = Math.random() * (r + 180) - (r + 180) / 2;
+// 					const y = Math.random() * 1 - 1 / 2;
+// 					const z = Math.random() * (r + 50) - (r + 50) / 2;
+
+// 					particlePositions[ i * 3 ] = x;
+// 					particlePositions[ i * 3 + 1 ] = y;
+// 					particlePositions[ i * 3 + 2 ] = z;
+
+// 					// add it to the geometry
+// 					particlesData.push( {
+// 						velocity: new THREE.Vector3( - 1 + Math.random() * 2, - 1 + Math.random() * 2, - 1 + Math.random() * 2 ),
+// 						numConnections: 0
+// 					} );
+
+// 				}
+
+// 				particles.setDrawRange( 0, particleCount );
+// 				particles.setAttribute( 'position', new THREE.BufferAttribute( particlePositions, 3 ).setUsage( THREE.DynamicDrawUsage ) );
+
+// 				// create the particle system
+// 				pointCloud = new THREE.Points( particles, pMaterial );
+// 				group.add( pointCloud );
+
+// 				const geometry = new THREE.BufferGeometry();
+
+// 				geometry.setAttribute( 'position', new THREE.BufferAttribute( positions, 3 ).setUsage( THREE.DynamicDrawUsage ) );
+// 				geometry.setAttribute( 'color', new THREE.BufferAttribute( colors, 3 ).setUsage( THREE.DynamicDrawUsage ) );
+
+// 				geometry.computeBoundingSphere();
+
+// 				geometry.setDrawRange( 0, 0 );
+
+// 				const material = new THREE.LineBasicMaterial( {
+// 					vertexColors: true,
+// 					blending: THREE.AdditiveBlending,
+// 					transparent: true
+// 				} );
+
+// 				linesMesh = new THREE.LineSegments( geometry, material );
+// 				group.add( linesMesh );
 
 
 			//On crée la géométrie
@@ -275,7 +410,7 @@ for (let i = 0, len = data.length; i < len; i++)
 			LeftoutlineMesh.layers.enable( BLOOM_SCENE );
 			scene.add( LeftoutlineMesh );
 
-			var RightoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xfea022, side: THREE.BackSide } );
+			var RightoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xff9900, side: THREE.BackSide } );
 			var RightoutlineMesh = new THREE.Mesh( outline_geometry_bar, RightoutlineMaterial );
 			RightoutlineMesh.scale.multiplyScalar(1.05);
 			RightoutlineMesh.layers.enable( BLOOM_SCENE );
@@ -371,9 +506,10 @@ for (let i = 0, len = data.length; i < len; i++)
 
 			scene.add(BallLight);
 
-			//Grid Helper
+			// //Grid Helper
 			// const gridHelper = new THREE.GridHelper(200, 50);
-			// gridHelper.layers.toggle( BLOOM_SCENE );
+			// gridHelper.position.y -= 5;
+			// // gridHelper.layers.toggle( BLOOM_SCENE );
 			// scene.add(gridHelper);
 
 			//La caméra est de base au centre de la scène donc on la décale
@@ -459,7 +595,7 @@ document.addEventListener( 'keyup', onKeyUp );
 					BallAngle = Math.PI;
 				else
 					BallAngle = M_2PI;
-				SpeedMultiplier = 0.1;
+				SpeedMultiplier = 0.4;
 				LeftHit = 0;
 				RightHit = 0;
 			}
@@ -524,7 +660,7 @@ document.addEventListener( 'keyup', onKeyUp );
 						else if (BallAngle < 0)
 							BallAngle += M_2PI;
 						if (SpeedMultiplier < SpeedLimit)
-							SpeedMultiplier += 0.01;
+							SpeedMultiplier += 0.02;
 							trainee_msh[0].material.color.setHex(0x00c8ff);
 							BalloutlineMesh.material.color.setHex(0x00c8ff);
 							BallLight.color.setHex(0x00c8ff);
@@ -544,10 +680,10 @@ document.addEventListener( 'keyup', onKeyUp );
 					else if (BallAngle < 0)
 						BallAngle += M_2PI;
 					if (SpeedMultiplier < SpeedLimit)
-						SpeedMultiplier += 0.01;
-						trainee_msh[0].material.color.setHex(0xffea022);
-						BalloutlineMesh.material.color.setHex(0xffea022);
-						BallLight.color.setHex(0xffea022);
+						SpeedMultiplier += 0.02;
+						trainee_msh[0].material.color.setHex(0xff9900);
+						BalloutlineMesh.material.color.setHex(0xff9900);
+						BallLight.color.setHex(0xff9900);
 					}
 					LeftHit = 0;
 				}
@@ -576,8 +712,6 @@ document.addEventListener( 'keyup', onKeyUp );
 
 			function updateAudioVisualizer()
 			{
-				const data = analyser.getFrequencyData();
-				let averageFreq = analyser.getAverageFrequency();
 				for (let i = data.length - 1, len = 0; i >= len; i--)
 				{
 					var calc =  averageFreq / 100 + data[i] / 20;
@@ -594,12 +728,80 @@ document.addEventListener( 'keyup', onKeyUp );
 				}
 			}
 
+		// 	var	point_pos = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4,
+		// 0.3, 0.2, 0.1, 0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4,
+		// -0.3, -0.2, -0.1];
+		// 	const	point_pos_len = 39;
+		// 	var		point_pos_index = 0;
+		// 	for ( let i = 0; i < 10; i ++ ) {
+		// 		point_pos.unshift(i / 10);
+		// 	}
+			var plane_seed = [];
+		for(let i = 0; i < plane.geometry.attributes.position.count; i++){
+			plane_seed.unshift(Math.random() * (1 + 1) - 1);
+		}
+
+	
+function avg(arr){
+    var total = arr.reduce(function(sum, b) { return sum + b; });
+    return (total / arr.length);
+}
 			//La game loop
 			const animate = function ()
 			{
 				requestAnimationFrame( animate );
 				moveBall();
+				data = analyser.getFrequencyData();
+				averageFreq = analyser.getAverageFrequency();
+				var lowerHalfArray = data.slice(0, (3 * data.length/4) - 1);
+				var lowerAvg = avg(lowerHalfArray);
+				var lowerAvgFr = lowerAvg / lowerHalfArray.length;
+      			var upperHalfArray = data.slice((3 * data.length/4) - 1, data.length - 1);
+				var upperAvg = avg(upperHalfArray);
+				var upperAvgFr = upperAvg / upperHalfArray.length;
 				updateAudioVisualizer();
+				// makeRoughGround(plane, modulate(averageFreq, 0, 1, 0.5, 4));
+
+				let vertices = plane.geometry.attributes.position.array;
+				for(let i = 0; i < plane.geometry.attributes.position.count; i++){
+  					// vertices[ i * 3 + 0 ] += 0 - Math.random() * (2);
+  					// vertices[ i * 3 + 1 ] += 0 - Math.random() * (2);
+					vertices[ i * 3 + 2 ] = (lowerAvgFr / 20) * plane_seed[i] * 2 + (upperAvgFr / 10) * plane_seed[i];
+
+				}
+				plane.geometry.attributes.position.needsUpdate = true;
+
+				// const positionAttribute = plane.geometry.getAttribute( 'position' );
+				// const vertex = new THREE.Vector3();
+				// for ( let i = 0; i < positionAttribute.count; i ++ ) {
+
+				// vertex.fromBufferAttribute( positionAttribute, i ); // read vertex
+				// // var amp = 2;
+				// // 		 var time = Date.now();
+				// // 		 var distance = modulate(averageFreq, 0, 1, 0.5, 4) * amp;
+				// 		 vertex.z += 1;
+				// // do something with vertex
+
+				// //plane.geometry.setXYZ( i, vertex.x, vertex.y, vertex.z );
+				// positionAttribute.setXYZ( i, vertex.x, vertex.y, vertex.z );
+				// }
+
+
+
+
+
+				// plane.geometry.vertices.forEach(function (vertex, i) {
+				// 		 var amp = 2;
+				// 		 var time = Date.now();
+				// 		 var distance = (noise.noise2D(vertex.x + time * 0.0003, vertex.y + time * 0.0001) + 0) * modulate(averageFreq, 0, 1, 0.5, 4) * amp;
+				// 		 vertex.z = distance;
+				// 	});
+					plane.geometry.verticesNeedUpdate = true;
+					plane.geometry.normalsNeedUpdate = true;
+					plane.geometry.computeVertexNormals();
+					// plane.geometry.computeFaceNormals();
+				
+				
 				if (UpArrow == true)
 				{
 					if (bar_right.position.z - 4 > edge_top.position.z + 0.5)
@@ -632,6 +834,99 @@ document.addEventListener( 'keyup', onKeyUp );
 						LeftoutlineMesh.position.z = bar_left.position.z;
 					}
 				}
+
+				// let vertexpos = 0;
+				// let colorpos = 0;
+				// let numConnected = 0;
+
+				// for ( let i = 0; i < particleCount; i ++ )
+				// 	particlesData[ i ].numConnections = 0;
+
+				// for ( let i = 0; i < particleCount; i ++ ) {
+
+				// 	// get the particle
+				// 	const particleData = particlesData[ i ];
+					
+				// 	if (point_pos_index >= point_pos_len)
+				// 		point_pos_index = 0;
+					
+				// 	particlePositions[ i * 3 ] += point_pos[point_pos_index];
+				// 	particlePositions[ i * 3 + 1 ] += point_pos[point_pos_index];
+				// 	particlePositions[ i * 3 + 2 ] += point_pos[point_pos_index];
+
+					// particlePositions[ i * 3 ] += particleData.velocity.x;
+					// particlePositions[ i * 3 + 1 ] += particleData.velocity.y;
+					// particlePositions[ i * 3 + 2 ] += particleData.velocity.z;
+
+					// if ( particlePositions[ i * 3 + 1 ] < - rHalf || particlePositions[ i * 3 + 1 ] > rHalf )
+					// 	particleData.velocity.y = - particleData.velocity.y;
+
+					// if ( particlePositions[ i * 3 ] < - rHalf || particlePositions[ i * 3 ] > rHalf )
+					// 	particleData.velocity.x = - particleData.velocity.x;
+
+					// if ( particlePositions[ i * 3 + 2 ] < - rHalf || particlePositions[ i * 3 + 2 ] > rHalf )
+					// 	particleData.velocity.z = - particleData.velocity.z;
+
+					// if ( effectController.limitConnections && particleData.numConnections >= effectController.maxConnections )
+					// 	continue;
+
+					// Check collision
+					// for ( let j = i + 1; j < particleCount; j ++ ) {
+
+					// 	const particleDataB = particlesData[ j ];
+					// 	if ( effectController.limitConnections && particleDataB.numConnections >= effectController.maxConnections )
+					// 		continue;
+
+					// 	const dx = particlePositions[ i * 3 ] - particlePositions[ j * 3 ];
+					// 	const dy = particlePositions[ i * 3 + 1 ] - particlePositions[ j * 3 + 1 ];
+					// 	const dz = particlePositions[ i * 3 + 2 ] - particlePositions[ j * 3 + 2 ];
+					// 	const dist = Math.sqrt( dx * dx + dy * dy + dz * dz );
+
+					// 	// if ( dist < effectController.minDistance ) {
+
+					// 	// 	particleData.numConnections ++;
+					// 	// 	particleDataB.numConnections ++;
+
+					// 	// 	const alpha = 1.0 - dist / effectController.minDistance;
+
+					// 	// 	positions[ vertexpos ++ ] = particlePositions[ i * 3 ];
+					// 	// 	positions[ vertexpos ++ ] = particlePositions[ i * 3 + 1 ];
+					// 	// 	positions[ vertexpos ++ ] = particlePositions[ i * 3 + 2 ];
+
+					// 	// 	positions[ vertexpos ++ ] = particlePositions[ j * 3 ];
+					// 	// 	positions[ vertexpos ++ ] = particlePositions[ j * 3 + 1 ];
+					// 	// 	positions[ vertexpos ++ ] = particlePositions[ j * 3 + 2 ];
+
+					// 	// 	colors[ colorpos ++ ] = alpha;
+					// 	// 	colors[ colorpos ++ ] = alpha;
+					// 	// 	colors[ colorpos ++ ] = alpha;
+
+					// 	// 	colors[ colorpos ++ ] = alpha;
+					// 	// 	colors[ colorpos ++ ] = alpha;
+					// 	// 	colors[ colorpos ++ ] = alpha;
+
+					// 	// 	numConnected ++;
+
+					// 	// }
+
+					// }
+
+				// }
+
+
+				// linesMesh.geometry.setDrawRange( 0, numConnected * 2 );
+				// linesMesh.geometry.attributes.position.needsUpdate = true;
+				// linesMesh.geometry.attributes.color.needsUpdate = true;
+
+				// pointCloud.geometry.attributes.position.needsUpdate = true;
+
+
+
+
+
+
+
+
 				//Lance le rendu de la scene
 				// renderer.render( scene, camera );
 				
