@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/20 16:15:27 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/28 16:08:38 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -177,6 +177,14 @@ window.onresize = function () {
 			var PosDiff = 0;
 			var LeftScore = 0;
 			var RightScore = 0;
+			
+			var Leftcol = 0x0ae0ff;
+			var Rightcol = 0x8c1eff;
+			var Floorcol = 0x8108ff;
+			var UnerFloor = 0x8108ff;
+			
+			var Barcol = 0xffffff;
+			// var Barcol = 0xff8a14;
 
 			//Audio ==========================================================
 
@@ -188,7 +196,8 @@ const audio = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
 // Load audio file inside asset folder
 // audioLoader.load('sounds/376737_Skullbeatz___Bad_Cat_Maste.mp3', (buffer) => {
-	audioLoader.load('sounds/powercyan-plutocracy-ephixa-remix-synthwave-dubstep.mp3', (buffer) => {
+	//audioLoader.load('sounds/far-cry-3-blood-dragon-ost-power-core-track-07.mp3', (buffer) => {
+	audioLoader.load('sounds/legend-of-zelda-theme-but-its-synthwave.mp3', (buffer) => {
     audio.setBuffer(buffer);
     audio.setLoop(true);
     audio.play();  // Start playback
@@ -212,9 +221,9 @@ const geometry_audio = new THREE.BoxGeometry(1, 1, 1);
 const material_audio = new THREE.MeshBasicMaterial( { color: 0x000000 } );
 
 const geometry_audio_outline = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-	const material_audio_outline = new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
-	const material_audio_outline_left = new THREE.MeshBasicMaterial( { color: 0x00c8ff, side: THREE.BackSide } );
-	const material_audio_outline_right = new THREE.MeshBasicMaterial( { color: 0xff9900, side: THREE.BackSide } );
+	const material_audio_outline = new THREE.MeshBasicMaterial( { color: Barcol, side: THREE.BackSide } );
+	const material_audio_outline_left = new THREE.MeshBasicMaterial( { color: Leftcol, side: THREE.BackSide } );
+	const material_audio_outline_right = new THREE.MeshBasicMaterial( { color: Rightcol, side: THREE.BackSide } );
 
 for (let i = 0, len = data.length; i < len; i++)
 {
@@ -244,19 +253,50 @@ for (let i = 0, len = data.length; i < len; i++)
 
 //Plane =========================================================================
 
-var planeGeometry = new THREE.PlaneGeometry(400, 200, 40, 20);
-	var planeMaterial = new THREE.MeshBasicMaterial({
+
+var planeGeometry = new THREE.PlaneGeometry(400, 220, 40, 20);
+	var planeMaterial = new THREE.MeshPhongMaterial({
 		// color: 0x6904ce,
-		color: 0xffffff,
-		// side: THREE.DoubleSide,
-		wireframe: true
+		color: Floorcol,
+		side: THREE.DoubleSide,
+		wireframe: true,
+		emissive : Floorcol,
+		emissiveIntensity : 12,
+		// specular : 0xffffff,
+		// shininess : 10
+	});
+	var UnderplaneGeometry = new THREE.PlaneGeometry(450, 300, 2, 2);
+
+	// const texture = new THREE.TextureLoader().load( 'textures/gradient.jpg' );
+
+	// texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+	// texture.repeat.set( 10000, 10000 );
+	// texture.anisotropy = 16;
+	// texture.encoding = THREE.sRGBEncoding;
+
+	var UnderplaneMaterial = new THREE.MeshPhongMaterial({
+		// color: 0x6904ce,
+		// color: Floorcol,
+		side: THREE.DoubleSide,
+		wireframe: false,
+		emissive : Floorcol,
+		emissiveIntensity : 0.05,
+		// emissivMap : texture
+		// emissiveMap : texture
+		// specular : 0xffffff,
+		// shininess : 10
     });
+
     
 	var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    // plane.rotation.x = -0.5 * Math.PI;
+    var Underplane = new THREE.Mesh(UnderplaneGeometry, UnderplaneMaterial);
+	// plane.rotation.x = -0.5 * Math.PI;
 	plane.rotation.x += M_PI_2;
-	plane.position.set(0, -8, -10);
-	scene.add(plane);
+	Underplane.rotation.x += M_PI_2;
+	plane.position.set(0, -10, -10);
+	Underplane.position.set(0, -18, -10);
+	// plane.layers.enable( BLOOM_SCENE );
+	scene.add(plane, Underplane);
 
 	function modulate(val, minVal, maxVal, outMin, outMax) {
 	var fr = fractionate(val, minVal, maxVal);
@@ -404,13 +444,13 @@ function makeRoughGround(mesh, distortionFr) {
 
 
 			const outline_geometry_bar = new THREE.BoxGeometry(1.2, 1.2, 8.2);
-			var LeftoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0x00c8ff, side: THREE.BackSide } );
+			var LeftoutlineMaterial= new THREE.MeshBasicMaterial( { color: Leftcol, side: THREE.BackSide } );
 			var LeftoutlineMesh = new THREE.Mesh( outline_geometry_bar, LeftoutlineMaterial );
 			LeftoutlineMesh.scale.multiplyScalar(1.05);
 			LeftoutlineMesh.layers.enable( BLOOM_SCENE );
 			scene.add( LeftoutlineMesh );
 
-			var RightoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xff9900, side: THREE.BackSide } );
+			var RightoutlineMaterial= new THREE.MeshBasicMaterial( { color: Rightcol, side: THREE.BackSide } );
 			var RightoutlineMesh = new THREE.Mesh( outline_geometry_bar, RightoutlineMaterial );
 			RightoutlineMesh.scale.multiplyScalar(1.05);
 			RightoutlineMesh.layers.enable( BLOOM_SCENE );
@@ -677,9 +717,9 @@ document.addEventListener( 'keyup', onKeyUp );
 							BallAngle += M_2PI;
 						if (SpeedMultiplier < SpeedLimit)
 							SpeedMultiplier += 0.02;
-							trainee_msh[0].material.color.setHex(0x00c8ff);
-							BalloutlineMesh.material.color.setHex(0x00c8ff);
-							BallLight.color.setHex(0x00c8ff);
+							trainee_msh[0].material.color.setHex(Leftcol);
+							BalloutlineMesh.material.color.setHex(Leftcol);
+							BallLight.color.setHex(Leftcol);
 					}
 					RightHit = 0;
 				}
@@ -697,9 +737,9 @@ document.addEventListener( 'keyup', onKeyUp );
 						BallAngle += M_2PI;
 					if (SpeedMultiplier < SpeedLimit)
 						SpeedMultiplier += 0.02;
-						trainee_msh[0].material.color.setHex(0xff9900);
-						BalloutlineMesh.material.color.setHex(0xff9900);
-						BallLight.color.setHex(0xff9900);
+						trainee_msh[0].material.color.setHex(Rightcol);
+						BalloutlineMesh.material.color.setHex(Rightcol);
+						BallLight.color.setHex(Rightcol);
 					}
 					LeftHit = 0;
 				}
@@ -728,9 +768,10 @@ document.addEventListener( 'keyup', onKeyUp );
 
 			function updateAudioVisualizer()
 			{
+				let j = 0;
 				for (let i = data.length - 1, len = 0; i >= len; i--)
 				{
-					var calc =  averageFreq / 100 + data[i] / 20;
+					var calc =  averageFreq / 100 + data[j] / 20;
 					var calc_2 = calc / 2;
 					AudioMeshArray_Left[i].scale.set(1, calc, 1);
 					AudioMeshArray_Left[i].position.y = calc_2;
@@ -740,6 +781,7 @@ document.addEventListener( 'keyup', onKeyUp );
 					AudioMeshArray_outline_Left[i].position.y = calc_2;
 					AudioMeshArray_outline_Right[i].scale.set(1, calc, 1);
 					AudioMeshArray_outline_Right[i].position.y = calc_2;
+					j++;
 					
 				}
 			}
@@ -769,19 +811,27 @@ function avg(arr){
 				moveBall();
 				data = analyser.getFrequencyData();
 				averageFreq = analyser.getAverageFrequency();
-				var lowerHalfArray = data.slice(0, (3 * data.length/4) - 1);
+				var lowerHalfArray = data.slice(0, (data.length/4) - 1);
 				var lowerAvg = avg(lowerHalfArray);
 				var lowerAvgFr = lowerAvg / lowerHalfArray.length;
-      			var upperHalfArray = data.slice((3 * data.length/4) - 1, data.length - 1);
+				var lowerMidArray = data.slice((data.length/4) - 1, (2 * data.length/4) - 1);
+				var lowerMidAvg = avg(lowerMidArray);
+				var lowerMidAvgFr = lowerMidAvg / lowerMidArray.length;
+				var upperMidArray = data.slice((2 * data.length/4) - 1, (3 * data.length/4) - 1);
+				var upperMidAvg = avg(upperMidArray);
+				var upperMidAvgFr = upperMidAvg / upperMidArray.length;
+      			var upperHalfArray = data.slice( (3 * data.length/4) - 1, data.length - 1);
 				var upperAvg = avg(upperHalfArray);
 				var upperAvgFr = upperAvg / upperHalfArray.length;
 				updateAudioVisualizer();
 
 				let vertices = plane.geometry.attributes.position.array;
+				//Lower Average = les basses (aka les traits du centre)
 				for(let i = 0; i < plane.geometry.attributes.position.count; i++){
   					// vertices[ i * 3 + 0 ] += 0 - Math.random() * (2);
   					// vertices[ i * 3 + 1 ] += 0 - Math.random() * (2);
-					vertices[ i * 3 + 2 ] = (lowerAvgFr / 20) * plane_seed[i] * 2 + (upperAvgFr / 10) * plane_seed[i];
+					//vertices[ i * 3 + 2 ] = ((upperAvg / 120) + (upperMidAvg / 110) + (lowerMidAvg / 100) + (lowerAvg / 90)) * plane_seed[i];
+					vertices[ i * 3 + 2 ] = ((upperAvgFr / 10) + (- upperMidAvgFr / 16) + (- lowerMidAvgFr / 14) + (lowerAvgFr / 12)) * plane_seed[i];
 
 				}
 				plane.geometry.attributes.position.needsUpdate = true;
