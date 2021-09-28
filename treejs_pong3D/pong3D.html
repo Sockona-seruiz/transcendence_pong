@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/28 16:08:38 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/28 16:49:52 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -67,6 +67,8 @@ import { EffectComposer } from './three.js-dev/examples/jsm/postprocessing/Effec
 import { RenderPass } from './three.js-dev/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from './three.js-dev/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from './three.js-dev/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+import { BasisTextureLoader } from './three.js-dev/examples/jsm/loaders/BasisTextureLoader.js';
 
 
 
@@ -225,6 +227,22 @@ const geometry_audio_outline = new THREE.BoxGeometry(1.2, 1.2, 1.2);
 	const material_audio_outline_left = new THREE.MeshBasicMaterial( { color: Leftcol, side: THREE.BackSide } );
 	const material_audio_outline_right = new THREE.MeshBasicMaterial( { color: Rightcol, side: THREE.BackSide } );
 
+    var bar_loader = new THREE.TextureLoader();
+    var bar_texture = bar_loader.load( 'textures/gradient_yellow_pink.png' );
+
+	const material_audio_outline_test = new THREE.MeshPhongMaterial({
+		// color: 0x6904ce,
+		// color: Floorcol,
+		side: THREE.BackSide,
+		wireframe: false,
+		emissive : 0xffffff,
+		emissiveIntensity : 0.5,
+		// emissivMap : texture
+		emissiveMap : bar_texture
+		// specular : 0xffffff,
+		// shininess : 10
+    });
+
 for (let i = 0, len = data.length; i < len; i++)
 {
 	AudioMeshArray_Left.unshift(new THREE.Mesh( geometry_audio, material_audio ));
@@ -236,8 +254,8 @@ for (let i = 0, len = data.length; i < len; i++)
 	AudioMeshArray_Left[0].position.y = -2;
 	AudioMeshArray_Right[0].position.y = -2;
 
-	AudioMeshArray_outline_Left.unshift(new THREE.Mesh( geometry_audio_outline, material_audio_outline ));
-	AudioMeshArray_outline_Right.unshift(new THREE.Mesh( geometry_audio_outline, material_audio_outline ));
+	AudioMeshArray_outline_Left.unshift(new THREE.Mesh( geometry_audio_outline, material_audio_outline_test ));
+	AudioMeshArray_outline_Right.unshift(new THREE.Mesh( geometry_audio_outline, material_audio_outline_test ));
 	AudioMeshArray_outline_Left[0].layers.enable( BLOOM_SCENE );
 	AudioMeshArray_outline_Right[0].layers.enable( BLOOM_SCENE );
 	AudioMeshArray_outline_Left[0].position.x = -i * 1.8 - 1;
@@ -274,15 +292,19 @@ var planeGeometry = new THREE.PlaneGeometry(400, 220, 40, 20);
 	// texture.anisotropy = 16;
 	// texture.encoding = THREE.sRGBEncoding;
 
+
+    var loader = new THREE.TextureLoader();
+    var texture = loader.load( 'textures/WhiteGradient.png' );
+
 	var UnderplaneMaterial = new THREE.MeshPhongMaterial({
 		// color: 0x6904ce,
 		// color: Floorcol,
 		side: THREE.DoubleSide,
 		wireframe: false,
 		emissive : Floorcol,
-		emissiveIntensity : 0.05,
+		emissiveIntensity : 0.09,
 		// emissivMap : texture
-		// emissiveMap : texture
+		emissiveMap : texture
 		// specular : 0xffffff,
 		// shininess : 10
     });
@@ -294,7 +316,7 @@ var planeGeometry = new THREE.PlaneGeometry(400, 220, 40, 20);
 	plane.rotation.x += M_PI_2;
 	Underplane.rotation.x += M_PI_2;
 	plane.position.set(0, -10, -10);
-	Underplane.position.set(0, -18, -10);
+	Underplane.position.set(0, -18, -40);
 	// plane.layers.enable( BLOOM_SCENE );
 	scene.add(plane, Underplane);
 
