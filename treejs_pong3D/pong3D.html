@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/28 16:49:52 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/29 14:29:46 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -69,6 +69,11 @@ import { ShaderPass } from './three.js-dev/examples/jsm/postprocessing/ShaderPas
 import { UnrealBloomPass } from './three.js-dev/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 import { BasisTextureLoader } from './three.js-dev/examples/jsm/loaders/BasisTextureLoader.js';
+
+import { FBXLoader } from './three.js-dev/examples/jsm/loaders/FBXLoader.js';
+import { GLTFLoader } from './three.js-dev/examples/jsm/loaders/GLTFLoader.js';
+import { RGBELoader } from './three.js-dev/examples/jsm/loaders/RGBELoader.js';
+import { RoughnessMipmapper } from './three.js-dev/examples/jsm/utils/RoughnessMipmapper.js';
 
 
 
@@ -181,7 +186,7 @@ window.onresize = function () {
 			var RightScore = 0;
 			
 			var Leftcol = 0x0ae0ff;
-			var Rightcol = 0x8c1eff;
+			var Rightcol = 0xff13a5;
 			var Floorcol = 0x8108ff;
 			var UnerFloor = 0x8108ff;
 			
@@ -189,6 +194,21 @@ window.onresize = function () {
 			// var Barcol = 0xff8a14;
 
 			//Audio ==========================================================
+
+
+var audiolist = [];
+audiolist.unshift("sounds/far-cry-3-blood-dragon-ost-power-core-track-07.mp3");
+audiolist.unshift('sounds/dryskill-burnout-dubstep-synthwave.mp3');
+audiolist.unshift('sounds/far-cry-3-blood-dragon-ost-omega-force-track-16.mp3');
+audiolist.unshift('sounds/far-cry-3-blood-dragon-ost-sloans-assault-track-10.mp3');
+audiolist.unshift('sounds/legend-of-zelda-theme-but-its-synthwave.mp3');
+audiolist.unshift('sounds/mdk-press-start-free-download.mp3');
+audiolist.unshift('sounds/main_song.mp3');
+audiolist.unshift('sounds/miami-nights-1984-accelerated.mp3');
+audiolist.unshift('sounds/powercyan-plutocracy-ephixa-remix-synthwave-dubstep.mp3');
+audiolist.unshift('sounds/skrillex-bangarang-feat-sirah-official-music-video.mp3');
+audiolist.unshift('sounds/skrillex-first-of-the-year-equinox.mp3');
+audiolist.unshift('sounds/waterflame-blast-processing.mp3');
 
 const fftSize = 32;
 
@@ -198,8 +218,8 @@ const audio = new THREE.Audio(audioListener);
 const audioLoader = new THREE.AudioLoader();
 // Load audio file inside asset folder
 // audioLoader.load('sounds/376737_Skullbeatz___Bad_Cat_Maste.mp3', (buffer) => {
-	//audioLoader.load('sounds/far-cry-3-blood-dragon-ost-power-core-track-07.mp3', (buffer) => {
-	audioLoader.load('sounds/legend-of-zelda-theme-but-its-synthwave.mp3', (buffer) => {
+	audioLoader.load(audiolist[Math.floor(Math.random() * audiolist.length)], (buffer) => {
+	// audioLoader.load('sounds/legend-of-zelda-theme-but-its-synthwave.mp3', (buffer) => {
     audio.setBuffer(buffer);
     audio.setLoop(true);
     audio.play();  // Start playback
@@ -227,41 +247,47 @@ const geometry_audio_outline = new THREE.BoxGeometry(1.2, 1.2, 1.2);
 	const material_audio_outline_left = new THREE.MeshBasicMaterial( { color: Leftcol, side: THREE.BackSide } );
 	const material_audio_outline_right = new THREE.MeshBasicMaterial( { color: Rightcol, side: THREE.BackSide } );
 
-    var bar_loader = new THREE.TextureLoader();
-    var bar_texture = bar_loader.load( 'textures/gradient_yellow_pink.png' );
+	var leftbar_loader = new THREE.TextureLoader();
+	var leftbar_texture = leftbar_loader.load( 'textures/gradient_blue_pink.png' );
 
-	const material_audio_outline_test = new THREE.MeshPhongMaterial({
-		// color: 0x6904ce,
-		// color: Floorcol,
+	var rightbar_loader = new THREE.TextureLoader();
+	var rightbar_texture = rightbar_loader.load( 'textures/gradient_pink_blue.png' );
+
+	const leftmaterial_audio_outline_test = new THREE.MeshPhongMaterial({
 		side: THREE.BackSide,
 		wireframe: false,
 		emissive : 0xffffff,
 		emissiveIntensity : 0.5,
-		// emissivMap : texture
-		emissiveMap : bar_texture
-		// specular : 0xffffff,
-		// shininess : 10
+		emissiveMap : leftbar_texture
+    });
+
+	const rightmaterial_audio_outline_test = new THREE.MeshPhongMaterial({
+		side: THREE.BackSide,
+		wireframe: false,
+		emissive : 0xffffff,
+		emissiveIntensity : 0.5,
+		emissiveMap : rightbar_texture
     });
 
 for (let i = 0, len = data.length; i < len; i++)
 {
 	AudioMeshArray_Left.unshift(new THREE.Mesh( geometry_audio, material_audio ));
 	AudioMeshArray_Right.unshift(new THREE.Mesh( geometry_audio, material_audio ));
-	AudioMeshArray_Left[0].position.x = -i * 1.8 - 1;
-	AudioMeshArray_Right[0].position.x = i * 1.8 + 1;
-	AudioMeshArray_Left[0].position.z = -22;
-	AudioMeshArray_Right[0].position.z = -22;
+	AudioMeshArray_Left[0].position.z = i * 2.65 - 20;
+	AudioMeshArray_Right[0].position.z = i * 2.65 - 20;
+	AudioMeshArray_Left[0].position.x = -32;
+	AudioMeshArray_Right[0].position.x = 32;
 	AudioMeshArray_Left[0].position.y = -2;
 	AudioMeshArray_Right[0].position.y = -2;
 
-	AudioMeshArray_outline_Left.unshift(new THREE.Mesh( geometry_audio_outline, material_audio_outline_test ));
-	AudioMeshArray_outline_Right.unshift(new THREE.Mesh( geometry_audio_outline, material_audio_outline_test ));
+	AudioMeshArray_outline_Left.unshift(new THREE.Mesh( geometry_audio_outline, leftmaterial_audio_outline_test ));
+	AudioMeshArray_outline_Right.unshift(new THREE.Mesh( geometry_audio_outline, leftmaterial_audio_outline_test ));
 	AudioMeshArray_outline_Left[0].layers.enable( BLOOM_SCENE );
 	AudioMeshArray_outline_Right[0].layers.enable( BLOOM_SCENE );
-	AudioMeshArray_outline_Left[0].position.x = -i * 1.8 - 1;
-	AudioMeshArray_outline_Right[0].position.x = i * 1.8 + 1;
-	AudioMeshArray_outline_Left[0].position.z = -22;
-	AudioMeshArray_outline_Right[0].position.z = -22;
+	AudioMeshArray_outline_Left[0].position.z = i * 2.65 - 20;
+	AudioMeshArray_outline_Right[0].position.z = i * 2.65 - 20;
+	AudioMeshArray_outline_Left[0].position.x = -32;
+	AudioMeshArray_outline_Right[0].position.x = 32;
 	AudioMeshArray_outline_Left[0].position.y = -2;
 	AudioMeshArray_outline_Right[0].position.y = -2;
 	// AudioMeshArray_outline_Left[0].multiplyScalar(1.05);
@@ -269,10 +295,64 @@ for (let i = 0, len = data.length; i < len; i++)
 	scene.add( AudioMeshArray_Left[0], AudioMeshArray_Right[0], AudioMeshArray_outline_Left[0], AudioMeshArray_outline_Right[0]);
 }
 
+//Sun=========================================================================
+
+	var SunMesh;
+
+		const gltfloader = new GLTFLoader().setPath( 'models/' );
+		
+		gltfloader.load( 'SunBot.gltf', function ( gltf ) {
+		gltf.scene.traverse( function ( child ) {
+			if ( child.isMesh ) {
+			child.material.emissiveIntensity = 0.3;
+			child.position.set(0, 11, -23);
+			}
+		} );
+		scene.add( gltf.scene );
+		} );
+		gltfloader.load( 'SunMidBot.gltf', function ( gltf ) {
+		gltf.scene.traverse( function ( child ) {
+			if ( child.isMesh ) {
+			child.material.emissiveIntensity = 0.3;
+			child.position.set(0, 11, -23);
+			}
+		} );
+		scene.add( gltf.scene );
+		} );
+		gltfloader.load( 'SunMidTop.gltf', function ( gltf ) {
+		gltf.scene.traverse( function ( child ) {
+			if ( child.isMesh ) {
+			child.material.emissiveIntensity = 0.3;
+			child.position.set(0, 11, -23);
+			}
+		} );
+		scene.add( gltf.scene );
+		} );
+		gltfloader.load( 'SunTop.gltf', function ( gltf ) {
+		gltf.scene.traverse( function ( child ) {
+			if ( child.isMesh ) {
+			child.material.emissiveIntensity = 0.3;
+			child.position.set(0, 11, -23);
+			}
+		} );
+		SunMesh = gltf.scene;
+		scene.add( SunMesh );
+		} );
+
+		if (SunMesh)
+		{
+		 	SunMesh.position.set(-20, 11, -23);
+		}
+// var newMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});
+// 	model.traverse((o) => {
+//   if (o.isMesh) o.position.x = -20;
+// });
+
+
 //Plane =========================================================================
 
 
-var planeGeometry = new THREE.PlaneGeometry(400, 220, 40, 20);
+var planeGeometry = new THREE.PlaneGeometry(500, 310, 40, 20);
 	var planeMaterial = new THREE.MeshPhongMaterial({
 		// color: 0x6904ce,
 		color: Floorcol,
@@ -283,7 +363,7 @@ var planeGeometry = new THREE.PlaneGeometry(400, 220, 40, 20);
 		// specular : 0xffffff,
 		// shininess : 10
 	});
-	var UnderplaneGeometry = new THREE.PlaneGeometry(450, 300, 2, 2);
+	var UnderplaneGeometry = new THREE.PlaneGeometry(600, 380, 2, 2);
 
 	// const texture = new THREE.TextureLoader().load( 'textures/gradient.jpg' );
 
@@ -294,19 +374,14 @@ var planeGeometry = new THREE.PlaneGeometry(400, 220, 40, 20);
 
 
     var loader = new THREE.TextureLoader();
-    var texture = loader.load( 'textures/WhiteGradient.png' );
+    var texture = loader.load( 'textures/gradient_blue_pink.png' );
 
 	var UnderplaneMaterial = new THREE.MeshPhongMaterial({
-		// color: 0x6904ce,
-		// color: Floorcol,
 		side: THREE.DoubleSide,
 		wireframe: false,
 		emissive : Floorcol,
 		emissiveIntensity : 0.09,
-		// emissivMap : texture
 		emissiveMap : texture
-		// specular : 0xffffff,
-		// shininess : 10
     });
 
     
@@ -591,10 +666,10 @@ function makeRoughGround(mesh, distortionFr) {
 			// scene.add(gridHelper);
 
 			//La caméra est de base au centre de la scène donc on la décale
-			camera.position.z = 25;
-			camera.position.y = 40;
+			camera.position.z = 28;
+			camera.position.y = 38;
 
-			camera.rotation.x = -1;
+			camera.rotation.x = -0.9;
 
 //Keys
 			let UpArrow = false;
@@ -793,7 +868,7 @@ document.addEventListener( 'keyup', onKeyUp );
 				let j = 0;
 				for (let i = data.length - 1, len = 0; i >= len; i--)
 				{
-					var calc =  averageFreq / 100 + data[j] / 20;
+					var calc =  averageFreq / 120 + data[j] / 40;
 					var calc_2 = calc / 2;
 					AudioMeshArray_Left[i].scale.set(1, calc, 1);
 					AudioMeshArray_Left[i].position.y = calc_2;
