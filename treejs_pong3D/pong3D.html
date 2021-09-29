@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/29 16:24:52 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/29 16:39:26 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -356,7 +356,7 @@ for (let i = 0, len = data.length; i < len; i++)
 //Plane =========================================================================
 
 
-var planeGeometry = new THREE.PlaneGeometry(500, 310, 40, 20);
+var planeGeometry = new THREE.PlaneGeometry(600, 300, 40, 20);
 	var planeMaterial = new THREE.MeshPhongMaterial({
 		// color: 0x6904ce,
 		color: Floorcol,
@@ -367,7 +367,7 @@ var planeGeometry = new THREE.PlaneGeometry(500, 310, 40, 20);
 		// specular : 0xffffff,
 		// shininess : 10
 	});
-	var UnderplaneGeometry = new THREE.PlaneGeometry(600, 380, 2, 2);
+	var UnderplaneGeometry = new THREE.PlaneGeometry(700, 350, 2, 2);
 
 	// const texture = new THREE.TextureLoader().load( 'textures/gradient.jpg' );
 
@@ -394,8 +394,8 @@ var planeGeometry = new THREE.PlaneGeometry(500, 310, 40, 20);
 	// plane.rotation.x = -0.5 * Math.PI;
 	plane.rotation.x += M_PI_2;
 	Underplane.rotation.x += M_PI_2;
-	plane.position.set(0, -10, -10);
-	Underplane.position.set(0, -18, -40);
+	plane.position.set(0, -10, -100);
+	Underplane.position.set(0, -18, -100);
 	// plane.layers.enable( BLOOM_SCENE );
 	scene.add(plane, Underplane);
 
@@ -673,7 +673,7 @@ function makeRoughGround(mesh, distortionFr) {
 			camera.position.z = 28;
 			camera.position.y = 38;
 
-			camera.rotation.x = -0.9;
+			camera.rotation.x = -0.86;
 
 //Keys
 			let UpArrow = false;
@@ -1000,7 +1000,17 @@ function avg(arr){
 				plane.geometry.normalsNeedUpdate = true;
 				plane.geometry.computeVertexNormals();
 
-				
+				if (Sunloaded == true)
+				{
+					SunMesh[3].scale.set(1 + (lowerAvgFr / 1500),1 + (lowerAvgFr / 1500),1 + (lowerAvgFr / 1500));
+					SunMesh[2].scale.set(1 + (lowerMidAvgFr / 1000),1 + (lowerMidAvgFr / 1000),1 + (lowerMidAvgFr / 1000));
+					SunMesh[1].scale.set(1 + (upperMidAvgFr / 1000),1 + (upperMidAvgFr / 1000),1 + (upperMidAvgFr / 1000));
+					SunMesh[0].scale.set(1 + (upperAvgFr / 1000),1 + (upperAvgFr / 1000),1 + (upperAvgFr / 1000));			
+					// upperAvgFr
+					// upperMidAvgFr
+					// lowerMidAvgFr
+					// lowerAvgFr	
+				}
 				
 				if (UpArrow == true)
 				{
