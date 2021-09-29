@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/29 14:29:46 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/29 16:21:21 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -297,9 +297,9 @@ for (let i = 0, len = data.length; i < len; i++)
 
 //Sun=========================================================================
 
-	var SunMesh;
+	var SunMesh = [];
 
-		const gltfloader = new GLTFLoader().setPath( 'models/' );
+		var gltfloader = new GLTFLoader().setPath( 'models/' );
 		
 		gltfloader.load( 'SunBot.gltf', function ( gltf ) {
 		gltf.scene.traverse( function ( child ) {
@@ -308,6 +308,7 @@ for (let i = 0, len = data.length; i < len; i++)
 			child.position.set(0, 11, -23);
 			}
 		} );
+		SunMesh[0] = gltf.scene;
 		scene.add( gltf.scene );
 		} );
 		gltfloader.load( 'SunMidBot.gltf', function ( gltf ) {
@@ -317,6 +318,7 @@ for (let i = 0, len = data.length; i < len; i++)
 			child.position.set(0, 11, -23);
 			}
 		} );
+		SunMesh[1] = gltf.scene;
 		scene.add( gltf.scene );
 		} );
 		gltfloader.load( 'SunMidTop.gltf', function ( gltf ) {
@@ -326,6 +328,7 @@ for (let i = 0, len = data.length; i < len; i++)
 			child.position.set(0, 11, -23);
 			}
 		} );
+		SunMesh[2] = gltf.scene;
 		scene.add( gltf.scene );
 		} );
 		gltfloader.load( 'SunTop.gltf', function ( gltf ) {
@@ -335,14 +338,15 @@ for (let i = 0, len = data.length; i < len; i++)
 			child.position.set(0, 11, -23);
 			}
 		} );
-		SunMesh = gltf.scene;
-		scene.add( SunMesh );
+		SunMesh[3] = gltf.scene;
+		scene.add( gltf.scene );
 		} );
 
-		if (SunMesh)
-		{
-		 	SunMesh.position.set(-20, 11, -23);
-		}
+		// if (SunMesh)
+		// {
+		//  	SunMesh.position.set(-20, 11, -23);
+		// 	SunMesh.material.emissiveIntensity = 1;
+		// }
 // var newMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});
 // 	model.traverse((o) => {
 //   if (o.isMesh) o.position.x = -20;
@@ -896,6 +900,65 @@ document.addEventListener( 'keyup', onKeyUp );
 			plane_seed.unshift(Math.random() * (1 + 1) - 1);
 		}
 
+		var Sunloaded = false;
+		var IncreaseBrightness = true;
+		// var BrightnessTable = [];
+		// var Brightnesspointer = 0;
+		// var j = 0.3;
+
+		// for (let i = 0; i <= 50; i++)
+		// {
+		// 	BrightnessTable[i] = j * i;
+		// }
+		// for (let i = 50; i < 0; i--)
+		// {
+		// 	BrightnessTable[50 + i] = i;
+		// }
+		
+		function moveSun()
+		{
+			if (Sunloaded == false)
+			{
+				if (SunMesh[0])
+				{
+		 			if (SunMesh[1])
+					{
+						 if (SunMesh[2])
+						{
+							 if (SunMesh[3])
+							{
+								 Sunloaded = true;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				for (let i = 0; i <= 3; i++)
+				{
+					SunMesh[i].traverse( function ( child ) {
+							if ( child.isMesh )
+							{
+								// child.material.emissiveIntensity = BrightnessTable[Brightnesspointer];
+								if (IncreaseBrightness == true)
+								{
+									child.material.emissiveIntensity += 0.002;
+									if (child.material.emissiveIntensity >= 0.75 && i == 3)
+										IncreaseBrightness = false;
+								}
+								else
+								{
+									child.material.emissiveIntensity -= 0.002;
+									if (child.material.emissiveIntensity <= 0.25 && i == 3)
+										IncreaseBrightness = true;
+								}
+
+							}
+					} );
+				}
+			}
+		}
 	
 function avg(arr){
     var total = arr.reduce(function(sum, b) { return sum + b; });
@@ -921,6 +984,7 @@ function avg(arr){
 				var upperAvg = avg(upperHalfArray);
 				var upperAvgFr = upperAvg / upperHalfArray.length;
 				updateAudioVisualizer();
+				moveSun();
 
 				let vertices = plane.geometry.attributes.position.array;
 				//Lower Average = les basses (aka les traits du centre)
