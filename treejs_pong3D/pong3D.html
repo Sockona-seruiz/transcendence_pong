@@ -6,7 +6,7 @@
 <!-- By: seruiz <seruiz@student.42lyon.fr>          +#+  +:+       +#+       -->
 <!--                                              +#+#+#+#+#+   +#+          -->
 <!-- Created: 2021/09/10 17:11:31 by seruiz            #+#    #+#            -->
-<!-- Updated: 2021/09/29 16:39:26 by seruiz           ###   ########lyon.fr  -->
+<!-- Updated: 2021/09/30 18:04:51 by seruiz           ###   ########lyon.fr  -->
 <!--                                                                         -->
 <!-- *********************************************************************** -->
 
@@ -139,6 +139,9 @@ const finalPass = new ShaderPass(
 	} ), "baseTexture"
 );
 finalPass.needsSwap = true;
+const width = window.innerWidth;
+const height = window.innerHeight;
+bloomComposer.setSize( width / 2 , height / 2);
 
 const finalComposer = new EffectComposer( renderer );
 finalComposer.addPass( renderScene );
@@ -156,7 +159,7 @@ window.onresize = function () {
 
 	renderer.setSize( width, height );
 
-	bloomComposer.setSize( width, height );
+	bloomComposer.setSize( width / 2, height / 2);
 	finalComposer.setSize( width, height );
 
 	// render();
@@ -209,6 +212,14 @@ audiolist.unshift('sounds/powercyan-plutocracy-ephixa-remix-synthwave-dubstep.mp
 audiolist.unshift('sounds/skrillex-bangarang-feat-sirah-official-music-video.mp3');
 audiolist.unshift('sounds/skrillex-first-of-the-year-equinox.mp3');
 audiolist.unshift('sounds/waterflame-blast-processing.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
+audiolist.unshift('sounds/dirty-androids-midnight-lady.mp3');
 
 const fftSize = 32;
 
@@ -297,50 +308,50 @@ for (let i = 0, len = data.length; i < len; i++)
 
 //Sun=========================================================================
 
-	var SunMesh = [];
+	var SunMesh;
 
 		var gltfloader = new GLTFLoader().setPath( 'models/' );
 		
-		gltfloader.load( 'SunBot.gltf', function ( gltf ) {
+		gltfloader.load( 'SunFull.gltf', function ( gltf ) {
 		gltf.scene.traverse( function ( child ) {
 			if ( child.isMesh ) {
 			child.material.emissiveIntensity = 0.3;
-			child.position.set(0, 11, -23);
+			child.position.set(0, 11, -24);
 			}
 		} );
-		SunMesh[0] = gltf.scene;
+		SunMesh = gltf.scene;
 		scene.add( gltf.scene );
 		} );
-		gltfloader.load( 'SunMidBot.gltf', function ( gltf ) {
-		gltf.scene.traverse( function ( child ) {
-			if ( child.isMesh ) {
-			child.material.emissiveIntensity = 0.3;
-			child.position.set(0, 11, -23);
-			}
-		} );
-		SunMesh[1] = gltf.scene;
-		scene.add( gltf.scene );
-		} );
-		gltfloader.load( 'SunMidTop.gltf', function ( gltf ) {
-		gltf.scene.traverse( function ( child ) {
-			if ( child.isMesh ) {
-			child.material.emissiveIntensity = 0.3;
-			child.position.set(0, 11, -23);
-			}
-		} );
-		SunMesh[2] = gltf.scene;
-		scene.add( gltf.scene );
-		} );
-		gltfloader.load( 'SunTop.gltf', function ( gltf ) {
-		gltf.scene.traverse( function ( child ) {
-			if ( child.isMesh ) {
-			child.material.emissiveIntensity = 0.3;
-			child.position.set(0, 11, -23);
-			}
-		} );
-		SunMesh[3] = gltf.scene;
-		scene.add( gltf.scene );
-		} );
+		// gltfloader.load( 'SunMidBot.gltf', function ( gltf ) {
+		// gltf.scene.traverse( function ( child ) {
+		// 	if ( child.isMesh ) {
+		// 	child.material.emissiveIntensity = 0.3;
+		// 	child.position.set(0, 11, -24);
+		// 	}
+		// } );
+		// SunMesh[1] = gltf.scene;
+		// scene.add( gltf.scene );
+		// } );
+		// gltfloader.load( 'SunMidTop.gltf', function ( gltf ) {
+		// gltf.scene.traverse( function ( child ) {
+		// 	if ( child.isMesh ) {
+		// 	child.material.emissiveIntensity = 0.3;
+		// 	child.position.set(0, 11, -24);
+		// 	}
+		// } );
+		// SunMesh[2] = gltf.scene;
+		// scene.add( gltf.scene );
+		// } );
+		// gltfloader.load( 'SunTop.gltf', function ( gltf ) {
+		// gltf.scene.traverse( function ( child ) {
+		// 	if ( child.isMesh ) {
+		// 	child.material.emissiveIntensity = 0.3;
+		// 	child.position.set(0, 11, -24);
+		// 	}
+		// } );
+		// SunMesh[3] = gltf.scene;
+		// scene.add( gltf.scene );
+		// } );
 
 		// if (SunMesh)
 		// {
@@ -363,7 +374,7 @@ var planeGeometry = new THREE.PlaneGeometry(600, 300, 40, 20);
 		side: THREE.DoubleSide,
 		wireframe: true,
 		emissive : Floorcol,
-		emissiveIntensity : 12,
+		emissiveIntensity : 2.5,
 		// specular : 0xffffff,
 		// shininess : 10
 	});
@@ -384,7 +395,7 @@ var planeGeometry = new THREE.PlaneGeometry(600, 300, 40, 20);
 		side: THREE.DoubleSide,
 		wireframe: false,
 		emissive : Floorcol,
-		emissiveIntensity : 0.09,
+		emissiveIntensity : 0.085,
 		emissiveMap : texture
     });
 
@@ -426,6 +437,281 @@ function makeRoughGround(mesh, distortionFr) {
 	// var ambientLight = new THREE.AmbientLight(0xaaaaaa);
     // scene.add(ambientLight);
 
+//Score==========================================================================
+
+
+const x = 0, y = 0;
+
+const rightrithcrystal = [];
+
+const crystalshape = new THREE.Shape();
+
+crystalshape.moveTo( x + 5, y );
+crystalshape.lineTo(x + 5 - 0.5, y - 0.5);
+crystalshape.lineTo(x + 0.5, y - 0.5);
+crystalshape.lineTo(0, 0);
+
+const ONcrystalmaterialleft = new THREE.MeshBasicMaterial( { color: 0x42e7ff } );
+const ONcrystalmaterialright = new THREE.MeshBasicMaterial( { color: 0xff5ec3 } );
+const OFFcrystalmaterial = new THREE.MeshBasicMaterial( { color: 0x040404 } );
+
+const crystalgeometry = new THREE.ShapeGeometry( crystalshape );
+const crystalmeshTop = new THREE.Mesh( crystalgeometry, OFFcrystalmaterial ) ;
+crystalmeshTop.position.set(0, 19.5, 10);
+rightrithcrystal.unshift(crystalmeshTop);
+
+const crystalmeshTopLeft = new THREE.Mesh( crystalgeometry, OFFcrystalmaterial ) ;
+crystalmeshTopLeft.rotation.z = M_PI_2;
+crystalmeshTopLeft.position.set(0, 14, 10);
+rightrithcrystal.unshift(crystalmeshTopLeft);
+
+const crystalmeshTopRight = new THREE.Mesh( crystalgeometry, OFFcrystalmaterial ) ;
+crystalmeshTopRight.rotation.z = -M_PI_2;
+crystalmeshTopRight.position.set(5, 19, 10);
+rightrithcrystal.unshift(crystalmeshTopRight);
+
+const crystalmeshBotLeft = new THREE.Mesh( crystalgeometry, OFFcrystalmaterial ) ;
+crystalmeshBotLeft.rotation.z = M_PI_2;
+crystalmeshBotLeft.position.set(0, 8, 10);
+rightrithcrystal.unshift(crystalmeshBotLeft);
+
+const crystalmeshBotRight = new THREE.Mesh( crystalgeometry, OFFcrystalmaterial ) ;
+crystalmeshBotRight.rotation.z = - M_PI_2;
+crystalmeshBotRight.position.set(5, 13, 10);
+rightrithcrystal.unshift(crystalmeshBotRight);
+
+const crystalmeshBot = new THREE.Mesh( crystalgeometry, OFFcrystalmaterial ) ;
+crystalmeshBot.rotation.z = M_PI;
+crystalmeshBot.position.set(5, 7.5, 10);
+rightrithcrystal.unshift(crystalmeshBot);
+
+const midcrystalshape = new THREE.Shape();
+
+midcrystalshape.moveTo( x - 0.5, y - 0.5);
+midcrystalshape.lineTo(x, y);
+midcrystalshape.lineTo(x + 4, y);
+midcrystalshape.lineTo(x + 4.5, y - 0.5);
+midcrystalshape.lineTo(x + 4, y - 1);
+midcrystalshape.lineTo(x, y - 1);
+
+const midcrystalgeometry = new THREE.ShapeGeometry( midcrystalshape );
+const crystalmeshMid = new THREE.Mesh( midcrystalgeometry, OFFcrystalmaterial ) ;
+crystalmeshMid.position.set(0.5, 14, 10);
+rightrithcrystal.unshift(crystalmeshMid);
+
+var drawfct = [];
+
+drawfct[0] = function draw0(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = OFFcrystalmaterial;
+	crystaltab[1].material = ONcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = ONcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = ONcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+drawfct[1] = function draw1(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = OFFcrystalmaterial;
+	crystaltab[1].material = OFFcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = OFFcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = OFFcrystalmaterial;
+	crystaltab[6].material = OFFcrystalmaterial;
+}
+
+drawfct[2] = function draw2(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = ONcrystalmaterial;
+	crystaltab[1].material = ONcrystalmaterial;
+	crystaltab[2].material = OFFcrystalmaterial;
+	crystaltab[3].material = ONcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = OFFcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+drawfct[3] = function draw3(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = ONcrystalmaterial;
+	crystaltab[1].material = ONcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = OFFcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = OFFcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+drawfct[4] = function draw4(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = ONcrystalmaterial;
+	crystaltab[1].material = OFFcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = OFFcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = ONcrystalmaterial;
+	crystaltab[6].material = OFFcrystalmaterial;
+}
+
+drawfct[5] = function draw5(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = ONcrystalmaterial;
+	crystaltab[1].material = ONcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = OFFcrystalmaterial;
+	crystaltab[4].material = OFFcrystalmaterial;
+	crystaltab[5].material = ONcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+drawfct[6] = function draw6(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = ONcrystalmaterial;
+	crystaltab[1].material = ONcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = ONcrystalmaterial;
+	crystaltab[4].material = OFFcrystalmaterial;
+	crystaltab[5].material = ONcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+drawfct[7] = function draw7(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = OFFcrystalmaterial;
+	crystaltab[1].material = OFFcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = OFFcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = OFFcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+drawfct[8] = function draw8(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = ONcrystalmaterial;
+	crystaltab[1].material = ONcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = ONcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = ONcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+drawfct[9] = function draw9(crystaltab, left)
+{
+	let ONcrystalmaterial;
+	if (left == true)
+		ONcrystalmaterial = ONcrystalmaterialleft;
+	else
+		ONcrystalmaterial = ONcrystalmaterialright;
+	crystaltab[0].material = ONcrystalmaterial;
+	crystaltab[1].material = ONcrystalmaterial;
+	crystaltab[2].material = ONcrystalmaterial;
+	crystaltab[3].material = OFFcrystalmaterial;
+	crystaltab[4].material = ONcrystalmaterial;
+	crystaltab[5].material = ONcrystalmaterial;
+	crystaltab[6].material = ONcrystalmaterial;
+}
+
+function updateScore(leftscore, rightscore)
+{
+	if (leftscore > 99)
+		leftscore = 99;
+	if (rightscore > 99)
+		rightscore = 99;
+	let lscoreunite = leftscore % 10;
+	let rscoreunite = rightscore % 10;
+
+
+	let lscoredizaine = (leftscore - lscoreunite) / 10;
+	let rscoredizaine = (rightscore - rscoreunite) / 10;
+
+	// console.log(lscoredizaine );
+
+	
+	drawfct[lscoredizaine](leftleftcrystal, true);
+	drawfct[lscoreunite](leftrightcrystal, true);
+	drawfct[rscoredizaine](rightleftcrystal, false);
+	drawfct[rscoreunite](rightrithcrystal, false);
+}
+
+var leftleftcrystal = [];
+var leftrightcrystal = [];
+var rightleftcrystal = [];
+
+for (let i = 0; i < rightrithcrystal.length; i++)
+{
+	rightrithcrystal[i].position.x -= 2.5;
+	leftleftcrystal[i] = rightrithcrystal[i].clone(rightrithcrystal[i], true);
+	leftrightcrystal[i] = rightrithcrystal[i].clone(rightrithcrystal[i], true);
+	rightleftcrystal[i] = rightrithcrystal[i].clone(rightrithcrystal[i], true);
+	leftleftcrystal[i].position.x -= 26.5;
+	leftrightcrystal[i].position.x -= 16.5;
+	rightleftcrystal[i].position.x += 16.5;
+	rightrithcrystal[i].position.x += 26.5;
+
+	leftleftcrystal[i].position.z -= 30;
+	leftrightcrystal[i].position.z -= 30;
+	rightleftcrystal[i].position.z -= 30;
+	rightrithcrystal[i].position.z -= 30;
+
+	scene.add( leftleftcrystal[i], leftrightcrystal[i], rightleftcrystal[i], rightrithcrystal[i]);
+}
+
+updateScore(0, 0);
+
+// drawfct[4](leftleftcrystal, true);
+// drawfct[7](leftrightcrystal, true);
+// drawfct[8](rightleftcrystal, false);
+// drawfct[6](rightrithcrystal, false);
 
 //PARTICLES ======================================================================
 
@@ -857,12 +1143,14 @@ document.addEventListener( 'keyup', onKeyUp );
 				if (ball.position.x <= edge_left.position.x + 1)
 				{
 					RightScore += 1;
+					updateScore(LeftScore, RightScore);
 					resetParams(0);
 				}
 
 				if (ball.position.x >= edge_right.position.x - 1)
 				{
 					LeftScore += 1;
+					updateScore(LeftScore, RightScore);
 					resetParams(1);
 				}
 			}
@@ -900,7 +1188,7 @@ document.addEventListener( 'keyup', onKeyUp );
 			plane_seed.unshift(Math.random() * (1 + 1) - 1);
 		}
 
-		var Sunloaded = false;
+		// var Sunloaded = false;
 		var IncreaseBrightness = true;
 		// var BrightnessTable = [];
 		// var Brightnesspointer = 0;
@@ -917,47 +1205,68 @@ document.addEventListener( 'keyup', onKeyUp );
 		
 		function moveSun()
 		{
-			if (Sunloaded == false)
-			{
-				if (SunMesh[0])
+		if (SunMesh)
+		{
+			SunMesh.traverse( function ( child ) {
+				if ( child.isMesh )
 				{
-		 			if (SunMesh[1])
+					if (IncreaseBrightness == true)
 					{
-						 if (SunMesh[2])
-						{
-							 if (SunMesh[3])
-							{
-								 Sunloaded = true;
-							}
-						}
+						child.material.emissiveIntensity += 0.002;
+						if (child.material.emissiveIntensity >= 0.75)
+							IncreaseBrightness = false;
 					}
-				}
+					else
+					{
+						child.material.emissiveIntensity -= 0.002;
+						if (child.material.emissiveIntensity <= 0.25)
+							IncreaseBrightness = true;
+					
+					}
 			}
-			else
-			{
-				for (let i = 0; i <= 3; i++)
-				{
-					SunMesh[i].traverse( function ( child ) {
-							if ( child.isMesh )
-							{
-								// child.material.emissiveIntensity = BrightnessTable[Brightnesspointer];
-								if (IncreaseBrightness == true)
-								{
-									child.material.emissiveIntensity += 0.002;
-									if (child.material.emissiveIntensity >= 0.75 && i == 3)
-										IncreaseBrightness = false;
-								}
-								else
-								{
-									child.material.emissiveIntensity -= 0.002;
-									if (child.material.emissiveIntensity <= 0.25 && i == 3)
-										IncreaseBrightness = true;
-								}
+		} );
+	}
+			// if (Sunloaded == false)
+			// {
+			// 	if (SunMesh[0])
+			// 	{
+		 	// 		if (SunMesh[1])
+			// 		{
+			// 			 if (SunMesh[2])
+			// 			{
+			// 				 if (SunMesh[3])
+			// 				{
+			// 					 Sunloaded = true;
+			// 				}
+			// 			}
+			// 		}
+			// 	}
+			// }
+			// else
+			// {
+			// 	for (let i = 0; i <= 3; i++)
+			// 	{
+			// 		SunMesh[i].traverse( function ( child ) {
+			// 				if ( child.isMesh )
+			// 				{
+			// 					// child.material.emissiveIntensity = BrightnessTable[Brightnesspointer];
+			// 					if (IncreaseBrightness == true)
+			// 					{
+			// 						child.material.emissiveIntensity += 0.002;
+			// 						if (child.material.emissiveIntensity >= 0.75 && i == 3)
+			// 							IncreaseBrightness = false;
+			// 					}
+			// 					else
+			// 					{
+			// 						child.material.emissiveIntensity -= 0.002;
+			// 						if (child.material.emissiveIntensity <= 0.25 && i == 3)
+			// 							IncreaseBrightness = true;
+			// 					}
 
-							}
-					} );
-				}
-			}
+			// 				}
+			// 		} );
+			// 	}
+			// }
 		}
 	
 function avg(arr){
@@ -1000,17 +1309,17 @@ function avg(arr){
 				plane.geometry.normalsNeedUpdate = true;
 				plane.geometry.computeVertexNormals();
 
-				if (Sunloaded == true)
-				{
-					SunMesh[3].scale.set(1 + (lowerAvgFr / 1500),1 + (lowerAvgFr / 1500),1 + (lowerAvgFr / 1500));
-					SunMesh[2].scale.set(1 + (lowerMidAvgFr / 1000),1 + (lowerMidAvgFr / 1000),1 + (lowerMidAvgFr / 1000));
-					SunMesh[1].scale.set(1 + (upperMidAvgFr / 1000),1 + (upperMidAvgFr / 1000),1 + (upperMidAvgFr / 1000));
-					SunMesh[0].scale.set(1 + (upperAvgFr / 1000),1 + (upperAvgFr / 1000),1 + (upperAvgFr / 1000));			
-					// upperAvgFr
-					// upperMidAvgFr
-					// lowerMidAvgFr
-					// lowerAvgFr	
-				}
+				// if (Sunloaded == true)
+				// {
+				// 	SunMesh[3].scale.set(1 + (lowerAvgFr / 1500),1 + (lowerAvgFr / 1500),1 + (lowerAvgFr / 1500));
+				// 	SunMesh[2].scale.set(1 + (lowerMidAvgFr / 1000),1 + (lowerMidAvgFr / 1000),1 + (lowerMidAvgFr / 1000));
+				// 	SunMesh[1].scale.set(1 + (upperMidAvgFr / 1000),1 + (upperMidAvgFr / 1000),1 + (upperMidAvgFr / 1000));
+				// 	SunMesh[0].scale.set(1 + (upperAvgFr / 1000),1 + (upperAvgFr / 1000),1 + (upperAvgFr / 1000));			
+				// 	// upperAvgFr
+				// 	// upperMidAvgFr
+				// 	// lowerMidAvgFr
+				// 	// lowerAvgFr	
+				// }
 				
 				if (UpArrow == true)
 				{
