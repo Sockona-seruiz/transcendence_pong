@@ -84,11 +84,14 @@ export function init_score(scene)
 		scene.add( leftleftcrystal[i], leftrightcrystal[i], rightleftcrystal[i], rightrithcrystal[i]);
 	}
 
-	let score_s = {
+	var score_s = {
 		crystals : [],
 		ONmatleft : ONcrystalmaterialleft,
 		ONmatright : ONcrystalmaterialright,
-		OFFmat : OFFcrystalmaterial
+		OFFmat : OFFcrystalmaterial,
+
+		LeftScore : 0,
+		RightScore : 0
 	}
 	score_s.crystals[0] = leftleftcrystal;
 	score_s.crystals[1] = leftrightcrystal;

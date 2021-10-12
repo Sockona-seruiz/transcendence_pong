@@ -160,18 +160,16 @@ drawfct[9] = function draw9(crystaltab, left, score_s)
 	crystaltab[6].material = ONcrystalmaterial;
 }
 
-
-
-function updateScore(leftscore, rightscore, score_s)
+function updateScore(score_s)
 {
-	if (leftscore > 99)
-		leftscore = 99;
-	if (rightscore > 99)
-		rightscore = 99;
-	let lscoreunite = leftscore % 10;
-	let rscoreunite = rightscore % 10;
-	let lscoredizaine = (leftscore - lscoreunite) / 10;
-	let rscoredizaine = (rightscore - rscoreunite) / 10;
+	if (score_s.LeftScore > 99)
+		score_s.LeftScore = 99;
+	if (score_s.RightScore > 99)
+		score_s.RightScore = 99;
+	let lscoreunite = score_s.LeftScore % 10;
+	let rscoreunite = score_s.RightScore % 10;
+	let lscoredizaine = (score_s.LeftScore - lscoreunite) / 10;
+	let rscoredizaine = (score_s.RightScore - rscoreunite) / 10;
 	
 	drawfct[lscoredizaine](score_s.crystals[0], true, score_s);
 	drawfct[lscoreunite](score_s.crystals[1], true, score_s);
@@ -180,10 +178,13 @@ function updateScore(leftscore, rightscore, score_s)
 }
 
 /*
-let score_s = {
-	crystals : [],
-	ONmatleft : ONcrystalmaterialleft,
-	ONmatright : ONcrystalmaterialright,
-	OFFmat : score_s.OFFmat
-}
+	let score_s = {
+		crystals : [],
+		ONmatleft : ONcrystalmaterialleft,
+		ONmatright : ONcrystalmaterialright,
+		OFFmat : OFFcrystalmaterial,
+
+		LeftScore : 0,
+		RightScore : 0
+	}
 */

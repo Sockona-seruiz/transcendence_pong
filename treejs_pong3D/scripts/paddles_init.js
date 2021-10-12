@@ -38,7 +38,9 @@ export function init_paddles(scene, Leftcol, Rightcol, BLOOM_SCENE)
 		bar_right : bar_right_msh,
 		bar_right_out : RightoutlineMesh,
 		Lbar_pos_x : Left_bar_pos_x,
-		Rbar_pos_x : Right_bar_pos_x
+		Rbar_pos_x : Right_bar_pos_x,
+		left_col : Leftcol,
+		right_col : Rightcol
 	}
 	return (paddles_s);
 }

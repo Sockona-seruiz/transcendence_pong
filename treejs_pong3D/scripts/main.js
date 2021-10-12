@@ -21,11 +21,15 @@ import { init_score } from './score_init.js';
 import { init_paddles } from './paddles_init.js';
 import { init_ball } from './ball_init.js';
 import { init_arena } from './arena_init.js';
-
-
+import { init_audio } from './audio_init.js';
+import { init_plane } from './plane_init.js';
+import { moveBall } from './Update_ball.js';
 
 	//(FOV, Aspect Ratio, Début distance de rendu, fin)
 	const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	camera.position.z = 28;
+	camera.position.y = 38;
+	camera.rotation.x = -0.86;
 
 	//Renderer
 	const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -101,7 +105,16 @@ window.onresize = function () {
 	const width = window.innerWidth;
 	const height = window.innerHeight;
 
-	camera.aspect = width / height;
+	if (height > width)
+	{
+		camera.fov = 75 * (height / width);
+		camera.aspect = 1;
+	}
+	else
+	{
+		camera.fov = 75;
+		camera.aspect = width / height;
+	}
 	camera.updateProjectionMatrix();
 
 	renderer.setSize( width, height );
@@ -110,7 +123,6 @@ window.onresize = function () {
 	finalComposer.setSize( width, height );
 
 	// render();
-
 };
 
 //=======================================================================================================================================================
@@ -121,19 +133,24 @@ window.onresize = function () {
 			// var Right_bar_pos_x = 0;
 			// var Right_bar_pos_z = 0;
 
-			var M_PI = Math.PI;
-			var M_2PI = 2 * Math.PI;
-			var M_PI_2 = Math.PI / 2;
-			var M_3PI_2 = 3 * (Math.PI / 2);
-
-
-			var PosDiff = 0;
-			var LeftScore = 0;
-			var RightScore = 0;
 			
+
+			var PI_s = {
+				M_PI : Math.PI,
+				M_2PI : 2 * Math.PI,
+				M_PI_2 : Math.PI / 2,
+				M_3PI_2 : 3 * (Math.PI / 2)
+			}
+
+			
+			// var scores = {
+			// 	LeftScore : 0,
+			// 	RightScore : 0
+			// }
+
 			var Leftcol = 0x0ae0ff;
 			var Rightcol = 0xff13a5;
-			var Floorcol = 0x8108ff;
+			
 			var UnerFloor = 0x8108ff;
 			
 			var Barcol = 0xffffff;
@@ -141,109 +158,8 @@ window.onresize = function () {
 
 //Audio ==========================================================
 
+var audio_s = init_audio(scene, BLOOM_SCENE);
 
-var audiolist = [];
-audiolist.unshift("../sounds/far-cry-3-blood-dragon-ost-power-core-track-07.mp3");
-audiolist.unshift('../sounds/dryskill-burnout-dubstep-synthwave.mp3');
-audiolist.unshift('../sounds/far-cry-3-blood-dragon-ost-omega-force-track-16.mp3');
-audiolist.unshift('../sounds/far-cry-3-blood-dragon-ost-sloans-assault-track-10.mp3');
-audiolist.unshift('../sounds/legend-of-zelda-theme-but-its-synthwave.mp3');
-audiolist.unshift('../sounds/mdk-press-start-free-download.mp3');
-audiolist.unshift('../sounds/main_song.mp3');
-audiolist.unshift('../sounds/miami-nights-1984-accelerated.mp3');
-audiolist.unshift('../sounds/powercyan-plutocracy-ephixa-remix-synthwave-dubstep.mp3');
-audiolist.unshift('../sounds/skrillex-bangarang-feat-sirah-official-music-video.mp3');
-audiolist.unshift('../sounds/skrillex-first-of-the-year-equinox.mp3');
-audiolist.unshift('../sounds/waterflame-blast-processing.mp3');
-audiolist.unshift('../sounds/dirty-androids-midnight-lady.mp3');
-
-const fftSize = 32;
-
-const audioListener = new THREE.AudioListener();
-const audio = new THREE.Audio(audioListener);
-
-const audioLoader = new THREE.AudioLoader();
-audioLoader.load(audiolist[Math.floor(Math.random() * audiolist.length)], (buffer) => {
-    audio.setBuffer(buffer);
-    audio.setLoop(true);
-    audio.play();
-});
-
-// About fftSize https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/fftSize
-const analyser = new THREE.AudioAnalyser(audio, fftSize);
-
-var data = analyser.getFrequencyData();
-var averageFreq = analyser.getAverageFrequency();
-
-var AudioMeshArray_Left = [];
-var AudioMeshArray_Right = [];
-var AudioMeshArray_outline_Left = [];
-var AudioMeshArray_outline_Right = [];
-const geometry_audio = new THREE.BoxGeometry(1, 1, 1);
-const material_audio = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-
-const geometry_audio_outline = new THREE.BoxGeometry(1.2, 1.2, 1.2);
-
-	var leftbar_loader = new THREE.TextureLoader();
-	var leftbar_texture = leftbar_loader.load( 'textures/gradient_blue_pink.png' );
-
-	const leftmaterial_audio_outline= new THREE.MeshPhongMaterial({
-		side: THREE.BackSide,
-		wireframe: false,
-		emissive : 0xffffff,
-		emissiveIntensity : 0.5,
-		emissiveMap : leftbar_texture
-    });
-
-for (let i = 0, len = data.length; i < len; i++)
-{
-	AudioMeshArray_Left.unshift(new THREE.Mesh( geometry_audio, material_audio ));
-	AudioMeshArray_Right.unshift(new THREE.Mesh( geometry_audio, material_audio ));
-	AudioMeshArray_Left[0].position.z = i * 2.65 - 20;
-	AudioMeshArray_Right[0].position.z = i * 2.65 - 20;
-	AudioMeshArray_Left[0].position.x = -32;
-	AudioMeshArray_Right[0].position.x = 32;
-	AudioMeshArray_Left[0].position.y = -2;
-	AudioMeshArray_Right[0].position.y = -2;
-
-	AudioMeshArray_outline_Left.unshift(new THREE.Mesh( geometry_audio_outline, leftmaterial_audio_outline ));
-	AudioMeshArray_outline_Right.unshift(new THREE.Mesh( geometry_audio_outline, leftmaterial_audio_outline ));
-	AudioMeshArray_outline_Left[0].layers.enable( BLOOM_SCENE );
-	AudioMeshArray_outline_Right[0].layers.enable( BLOOM_SCENE );
-	AudioMeshArray_outline_Left[0].position.z = i * 2.65 - 20;
-	AudioMeshArray_outline_Right[0].position.z = i * 2.65 - 20;
-	AudioMeshArray_outline_Left[0].position.x = -32;
-	AudioMeshArray_outline_Right[0].position.x = 32;
-	AudioMeshArray_outline_Left[0].position.y = -2;
-	AudioMeshArray_outline_Right[0].position.y = -2;
-
-	scene.add( AudioMeshArray_Left[0], AudioMeshArray_Right[0], AudioMeshArray_outline_Left[0], AudioMeshArray_outline_Right[0]);
-}
-
-let	audio_s = {
-	AudioMeshArray_L : AudioMeshArray_Left,
-	AudioMeshArray_R : AudioMeshArray_Right,
-	AudioMeshArray_OL : AudioMeshArray_outline_Left,
-	AudioMeshArray_OR : AudioMeshArray_outline_Right,
-
-	avgFreq : averageFreq,
-	FrqData : data,
-	calc : 0,
-	calc_2 : 0,
-
-	lowerHalfArray : 0,
-	lowerAvg : 0,
-	lowerAvgFr : 0,
-	lowerMidArray : 0,
-	lowerMidAvg : 0,
-	lowerMidAvgFr : 0,
-	upperMidArray : 0,
-	upperMidAvg : 0,
-	upperMidAvgFr : 0,
-	upperHalfArray : 0,
-	upperAvg : 0,
-	upperAvgFr : 0
-}
 
 //Sun=========================================================================
 
@@ -265,62 +181,17 @@ let	audio_s = {
 //Plane =========================================================================
 
 
-var planeGeometry = new THREE.PlaneGeometry(600, 300, 40, 20);
-	var planeMaterial = new THREE.MeshPhongMaterial({
-		color: Floorcol,
-		side: THREE.DoubleSide,
-		wireframe: true,
-		emissive : Floorcol,
-		emissiveIntensity : 2.5,
-	});
-	var UnderplaneGeometry = new THREE.PlaneGeometry(700, 350, 2, 2);
-
-    var loader = new THREE.TextureLoader();
-    var texture = loader.load( 'textures/gradient_blue_pink.png' );
-
-	var UnderplaneMaterial = new THREE.MeshPhongMaterial({
-		side: THREE.DoubleSide,
-		wireframe: false,
-		emissive : Floorcol,
-		emissiveIntensity : 0.085,
-		emissiveMap : texture
-    });
-
-    
-	var plane_msh = new THREE.Mesh(planeGeometry, planeMaterial);
-    var Underplane_msh = new THREE.Mesh(UnderplaneGeometry, UnderplaneMaterial);
-	plane_msh.rotation.x += M_PI_2;
-	Underplane_msh.rotation.x += M_PI_2;
-	plane_msh.position.set(0, -10, -100);
-	Underplane_msh.position.set(0, -18, -100);
-	scene.add(plane_msh, Underplane_msh);
-
-	var plane_seed_rd = [];
-	for(let i = 0; i < plane_msh.geometry.attributes.position.count; i++){
-		plane_seed_rd.unshift(Math.random() * (1 + 1) - 1);
-	}
-
-	let plane_s = {
-		plane : plane_msh,
-		under_plane : Underplane_msh,
-		plane_seed : plane_seed_rd,
-
-		vertices : 0
-	}
 
 //Init fcts============================
-let score_s = init_score(scene);
-updateScore(0, 0, score_s);
+var plane_s = init_plane(scene);
+
+var score_s = init_score(scene);
+updateScore(score_s);
 
 let paddles_s = init_paddles(scene, Leftcol, Rightcol, BLOOM_SCENE);
 let arena_s = init_arena(scene, BLOOM_SCENE);
 let ball_s = init_ball(scene, BLOOM_SCENE);
 //=====================================
-
-	camera.position.z = 28;
-	camera.position.y = 38;
-
-	camera.rotation.x = -0.86;
 
 	let controls =
 	{
@@ -375,143 +246,37 @@ document.addEventListener( 'keyup', onKeyUp );
 
 
 
-function resetParams(x)
-{
-	ball_s.ball.position.x = 0;
-	ball_s.ball.position.z = 0;
-	ball_s.ball_outline.position.x = 0;
-	ball_s.ball_outline.position.z = 0;
-	ball_s.trainee_msh[0].material.color.setHex(0xffffff);
-	ball_s.ball_outline.material.color.setHex(0xffffff);
-	ball_s.light.color.setHex(0xffffff);
-	ball_s.pos_history_x.unshift(0);
-	ball_s.pos_history_z.unshift(0);
-	ball_s.pos_history_x.pop();
-	ball_s.pos_history_z.pop();
-	paddles_s.bar_left.position.x = paddles_s.Lbar_pos_x;
-	paddles_s.bar_left.position.z = 0;
-	paddles_s.bar_left_out.position.x = paddles_s.bar_left.position.x;
-	paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;
-	paddles_s.bar_right.position.x = paddles_s.Rbar_pos_x;
-	paddles_s.bar_right.position.z = 0;
-	paddles_s.bar_right_out.position.x = paddles_s.bar_right.position.x;
-	paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
-	if (x == 0)
-		ball_s.BallAngle = Math.PI;
-	else
-		ball_s.BallAngle = M_2PI;
-	ball_s.Speed = ball_s.BaseSpeed;
-	ball_s.LeftHit = 0;
-	ball_s.RightHit = 0;
-}
+
 
 			//====================================MOVE BALL==========================================
 			//Faire plusieurs mesh et dessiner des carrés entre les points de l'historique
 			//15 de profondeur = 14 carrés
 
-			function moveBall()
+
+
+			function avg(arr)
 			{
-				ball_s.pos_history_x.unshift(ball_s.ball.position.x);
-				ball_s.pos_history_z.unshift(ball_s.ball.position.z);
-				ball_s.pos_history_x.pop();
-				ball_s.pos_history_z.pop();
-
-				if (ball_s.trainee_msh[ball_s.history_depth] != null)
-				{
-					scene.remove(ball_s.trainee_msh[ball_s.history_depth]);
-					ball_s.trainee_msh.pop();
-				}
-				ball_s.trainee = new THREE.Shape();
-
-				ball_s.trainee.moveTo(ball_s.pos_history_x[0], ball_s.pos_history_z[0] - 0.5);
-					
-				ball_s.trainee.lineTo(ball_s.pos_history_x[1], ball_s.pos_history_z[1] - 0.5);
-				ball_s.trainee.lineTo(ball_s.pos_history_x[1], ball_s.pos_history_z[1] + 0.5);
-				ball_s.trainee.lineTo(ball_s.pos_history_x[0], ball_s.pos_history_z[0] + 0.5);
-
-				ball_s.old_trainee_pos_x = ball_s.pos_history_x[0 + 1];
-				ball_s.old_trainee_pos_z = ball_s.pos_history_z[0 + 1] + 0.25;
-				ball_s.trainee_geo = new THREE.ShapeGeometry(ball_s.trainee);
-				ball_s.trainee_msh.unshift (new THREE.Mesh(ball_s.trainee_geo, ball_s.material_msh));
-				ball_s.trainee_msh[0].rotation.x += M_PI_2;
-				ball_s.trainee_msh[0].layers.enable( BLOOM_SCENE );
-				scene.add(ball_s.trainee_msh[0]);
-
-				
-				ball_s.ball.position.x += Math.cos(ball_s.BallAngle) * ball_s.Speed;
-				ball_s.ball.position.z += (Math.sin(ball_s.BallAngle) * -1) * ball_s.Speed;
-				ball_s.ball_outline.position.x = ball_s.ball.position.x;
-				ball_s.ball_outline.position.z = ball_s.ball.position.z;
-				ball_s.light.position.x = ball_s.ball.position.x;
-				ball_s.light.position.z = ball_s.ball.position.z;
-				//  Est dans la barre de gauche en X                 (est dans la barre en Y)
-				//Une barre fait 8 de hauteur
-				if (ball_s.ball.position.x >= paddles_s.bar_left.position.x - 1 && ball_s.ball.position.x <= paddles_s.bar_left.position.x + 1 && (ball_s.ball.position.z - 0.5 <= paddles_s.bar_left.position.z + 4 && ball_s.ball.position.z + 0.5 >= paddles_s.bar_left.position.z - 4))
-				{
-					if (ball_s.LeftHit == 0)
-					{
-						ball_s.LeftHit = 1;
-						PosDiff = ball_s.ball.position.z - paddles_s.bar_left.position.z;
-						ball_s.BallAngle = Math.PI - ball_s.BallAngle - (PosDiff / 30);
-						if (ball_s.BallAngle > M_2PI)
-							ball_s.BallAngle -= M_2PI;
-						else if (ball_s.BallAngle < 0)
-							ball_s.BallAngle += M_2PI;
-						if (ball_s.Speed < ball_s.SpeedLimit)
-							ball_s.Speed += ball_s.SpeedIncrease;
-						ball_s.trainee_msh[0].material.color.setHex(Leftcol);
-						ball_s.ball_outline.material.color.setHex(Leftcol);
-						ball_s.light.color.setHex(Leftcol);
-					}
-					ball_s.RightHit = 0;
-				}
-
-				if (ball_s.ball.position.x >= paddles_s.bar_right.position.x - 1 && ball_s.ball.position.x <= paddles_s.bar_right.position.x + 1 && (ball_s.ball.position.z - 0.5 <= paddles_s.bar_right.position.z + 4 && ball_s.ball.position.z + 0.5 >= paddles_s.bar_right.position.z - 4))
-				{
-					if (ball_s.RightHit == 0)
-					{
-					ball_s.RightHit = 1;
-					PosDiff = ball_s.ball.position.z - paddles_s.bar_right.position.z;
-					ball_s.BallAngle = Math.PI - ball_s.BallAngle + (PosDiff/30);
-					if (ball_s.BallAngle > M_2PI)
-						ball_s.BallAngle -= M_2PI;
-					else if (ball_s.BallAngle < 0)
-						ball_s.BallAngle += M_2PI;
-					if (ball_s.Speed < ball_s.SpeedLimit)
-						ball_s.Speed += ball_s.SpeedIncrease;
-					ball_s.trainee_msh[0].material.color.setHex(Rightcol);
-					ball_s.ball_outline.material.color.setHex(Rightcol);
-					ball_s.light.color.setHex(Rightcol);
-					}
-					ball_s.LeftHit = 0;
-				}
-
-				if (ball_s.ball.position.z <= arena_s.top.position.z + 1 || ball_s.ball.position.z >= arena_s.bot.position.z - 1)
-				{
-					ball_s.BallAngle = M_2PI - ball_s.BallAngle;
-					if (ball_s.BallAngle > M_2PI)
-						ball_s.BallAngle -= M_2PI;
-					else if (ball_s.BallAngle < 0)
-						ball_s.BallAngle += M_2PI;
-				}
-
-				if (ball_s.ball.position.x <= arena_s.left.position.x + 1)
-				{
-					RightScore += 1;
-					updateScore(LeftScore, RightScore, score_s);
-					resetParams(0);
-				}
-
-				if (ball_s.ball.position.x >= arena_s.right.position.x - 1)
-				{
-					LeftScore += 1;
-					updateScore(LeftScore, RightScore, score_s);
-					resetParams(1);
-				}
+				var total = arr.reduce(function(sum, b) { return sum + b; });
+				return (total / arr.length);
 			}
 
 			function updateAudioVisualizer()
 			{
+				audio_s.FrqData = audio_s.analyser.getFrequencyData();
+				audio_s.avgFreq = audio_s.analyser.getAverageFrequency();
+				audio_s.lowerHalfArray = audio_s.FrqData.slice(0, (audio_s.FrqData.length/4) - 1);
+				audio_s.lowerAvg = avg(audio_s.lowerHalfArray);
+				audio_s.lowerAvgFr = audio_s.lowerAvg / audio_s.lowerHalfArray.length;
+				audio_s.lowerMidArray = audio_s.FrqData.slice((audio_s.FrqData.length/4) - 1, (2 * audio_s.FrqData.length/4) - 1);
+				audio_s.lowerMidAvg = avg(audio_s.lowerMidArray);
+				audio_s.lowerMidAvgFr = audio_s.lowerMidAvg / audio_s.lowerMidArray.length;
+				audio_s.upperMidArray = audio_s.FrqData.slice((2 * audio_s.FrqData.length/4) - 1, (3 * audio_s.FrqData.length/4) - 1);
+				audio_s.upperMidAvg = avg(audio_s.upperMidArray);
+				audio_s.upperMidAvgFr = audio_s.upperMidAvg / audio_s.upperMidArray.length;
+				  audio_s.upperHalfArray = audio_s.FrqData.slice( (3 * audio_s.FrqData.length/4) - 1, audio_s.FrqData.length - 1);
+				audio_s.upperAvg = avg(audio_s.upperHalfArray);
+				audio_s.upperAvgFr = audio_s.upperAvg / audio_s.upperHalfArray.length;
+
 				let j = 0;
 				for (let i = audio_s.FrqData.length - 1, len = 0; i >= len; i--)
 				{
@@ -555,31 +320,13 @@ function resetParams(x)
 		} );
 		}
 	}
-	
-function avg(arr){
-    var total = arr.reduce(function(sum, b) { return sum + b; });
-    return (total / arr.length);
-}
 
 			//La game loop
 	const animate = function ()
 	{
 		requestAnimationFrame( animate );
-		moveBall();
-		audio_s.FrqData = analyser.getFrequencyData();
-		audio_s.avgFreq = analyser.getAverageFrequency();
-		audio_s.lowerHalfArray = audio_s.FrqData.slice(0, (audio_s.FrqData.length/4) - 1);
-		audio_s.lowerAvg = avg(audio_s.lowerHalfArray);
-		audio_s.lowerAvgFr = audio_s.lowerAvg / audio_s.lowerHalfArray.length;
-		audio_s.lowerMidArray = audio_s.FrqData.slice((audio_s.FrqData.length/4) - 1, (2 * audio_s.FrqData.length/4) - 1);
-		audio_s.lowerMidAvg = avg(audio_s.lowerMidArray);
-		audio_s.lowerMidAvgFr = audio_s.lowerMidAvg / audio_s.lowerMidArray.length;
-		audio_s.upperMidArray = audio_s.FrqData.slice((2 * audio_s.FrqData.length/4) - 1, (3 * audio_s.FrqData.length/4) - 1);
-		audio_s.upperMidAvg = avg(audio_s.upperMidArray);
-		audio_s.upperMidAvgFr = audio_s.upperMidAvg / audio_s.upperMidArray.length;
-      	audio_s.upperHalfArray = audio_s.FrqData.slice( (3 * audio_s.FrqData.length/4) - 1, audio_s.FrqData.length - 1);
-		audio_s.upperAvg = avg(audio_s.upperHalfArray);
-		audio_s.upperAvgFr = audio_s.upperAvg / audio_s.upperHalfArray.length;
+		moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM_SCENE);
+
 		updateAudioVisualizer();
 		moveSun();
 
@@ -611,7 +358,7 @@ function avg(arr){
 		if (controls.DownArrow == true)
 		{
 			if (paddles_s.bar_right.position.z + 4 < arena_s.bot.position.z - 0.5)
-    	    {
+			{
 				paddles_s.bar_right.position.z += 0.5;
 				paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
 			}
