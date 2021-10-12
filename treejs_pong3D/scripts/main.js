@@ -1,21 +1,13 @@
 
 import * as THREE from '../three.js-dev/build/three.module.js';
 
-import { GUI } from '../three.js-dev/examples/jsm/libs/dat.gui.module.js';
-import Stats from '../three.js-dev/examples/jsm/libs/stats.module.js';
-
 import { OrbitControls } from '../three.js-dev/examples/jsm/controls/OrbitControls.js';
 import { EffectComposer } from '../three.js-dev/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '../three.js-dev/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from '../three.js-dev/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from '../three.js-dev/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-import { BasisTextureLoader } from '../three.js-dev/examples/jsm/loaders/BasisTextureLoader.js';
-
-import { FBXLoader } from '../three.js-dev/examples/jsm/loaders/FBXLoader.js';
 import { GLTFLoader } from '../three.js-dev/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader } from '../three.js-dev/examples/jsm/loaders/RGBELoader.js';
-import { RoughnessMipmapper } from '../three.js-dev/examples/jsm/utils/RoughnessMipmapper.js';
 
 import { init_score } from './score_init.js';
 import { init_paddles } from './paddles_init.js';
@@ -23,18 +15,21 @@ import { init_ball } from './ball_init.js';
 import { init_arena } from './arena_init.js';
 import { init_audio } from './audio_init.js';
 import { init_plane } from './plane_init.js';
+import { moveSun } from './update_sun.js';
 import { moveBall } from './Update_ball.js';
+import { updateAudioVisualizer } from './update_audio.js';
+import { updateplane } from './update_plane.js';
 
-	//(FOV, Aspect Ratio, Début distance de rendu, fin)
-	const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-	camera.position.z = 28;
-	camera.position.y = 38;
-	camera.rotation.x = -0.86;
+//(FOV, Aspect Ratio, Début distance de rendu, fin)
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.position.z = 28;
+camera.position.y = 38;
+camera.rotation.x = -0.86;
 
-	//Renderer
-	const renderer = new THREE.WebGLRenderer( { antialias: true } );
-	const scene = new THREE.Scene();
-	scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
+//Renderer
+const renderer = new THREE.WebGLRenderer( { antialias: true } );
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
 
 //===================================================================================================================================================
 const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
@@ -58,13 +53,14 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.toneMapping = THREE.ReinhardToneMapping;
 document.body.appendChild( renderer.domElement );
 
-// const controls = new OrbitControls( camera, renderer.domElement );
-// controls.maxPolarAngle = Math.PI * 0.5;
-// controls.minDistance = 1;
-// controls.maxDistance = 100;
-// controls.addEventListener( 'change', render );
+//Orbit Control (for spectators only)
 
-// scene.add( new THREE.AmbientLight( 0x404040 ) );
+const controls_mouse = new OrbitControls( camera, renderer.domElement );
+controls_mouse.maxPolarAngle = Math.PI * 0.5;
+controls_mouse.minDistance = 1;
+controls_mouse.maxDistance = 100;
+
+//End of Orbit Control
 
 const renderScene = new RenderPass( scene, camera );
 
@@ -100,8 +96,8 @@ finalComposer.addPass( finalPass );
 
 const mouse = new THREE.Vector2();
 
-window.onresize = function () {
-
+window.onresize = function ()
+{
 	const width = window.innerWidth;
 	const height = window.innerHeight;
 
@@ -125,62 +121,36 @@ window.onresize = function () {
 	// render();
 };
 
-//=======================================================================================================================================================
+var PI_s = 
+{
+	M_PI : Math.PI,
+	M_2PI : 2 * Math.PI,
+	M_PI_2 : Math.PI / 2,
+	M_3PI_2 : 3 * (Math.PI / 2)
+}
 
-
-			// var	Left_bar_pos_x = 0;
-			// var	Left_bar_pos_z = 0;
-			// var Right_bar_pos_x = 0;
-			// var Right_bar_pos_z = 0;
-
-			
-
-			var PI_s = {
-				M_PI : Math.PI,
-				M_2PI : 2 * Math.PI,
-				M_PI_2 : Math.PI / 2,
-				M_3PI_2 : 3 * (Math.PI / 2)
-			}
-
-			
-			// var scores = {
-			// 	LeftScore : 0,
-			// 	RightScore : 0
-			// }
-
-			var Leftcol = 0x0ae0ff;
-			var Rightcol = 0xff13a5;
-			
-			var UnerFloor = 0x8108ff;
-			
-			var Barcol = 0xffffff;
-			// var Barcol = 0xff8a14;
-
-//Audio ==========================================================
+var Leftcol = 0x0ae0ff;
+var Rightcol = 0xff13a5;
 
 var audio_s = init_audio(scene, BLOOM_SCENE);
+//Sun=========================================
+var IncreaseBrightness = true;
+var SunMesh;
+var gltfloader = new GLTFLoader().setPath( 'models/' );
 
-
-//Sun=========================================================================
-
-	var SunMesh;
-
-		var gltfloader = new GLTFLoader().setPath( 'models/' );
-		
-		gltfloader.load( 'SunFull.gltf', function ( gltf ) {
-		gltf.scene.traverse( function ( child ) {
-			if ( child.isMesh ) {
+gltfloader.load( 'SunFull.gltf', function ( gltf ) 
+{
+	gltf.scene.traverse( function ( child ) 
+	{
+		if ( child.isMesh )
+		{
 			child.material.emissiveIntensity = 0.3;
 			child.position.set(0, 11, -24);
-			}
-		} );
-		SunMesh = gltf.scene;
-		scene.add( gltf.scene );
-		} );
-
-//Plane =========================================================================
-
-
+		}
+	} );
+	SunMesh = gltf.scene;
+	scene.add( gltf.scene );
+} );
 
 //Init fcts============================
 var plane_s = init_plane(scene);
@@ -193,13 +163,13 @@ let arena_s = init_arena(scene, BLOOM_SCENE);
 let ball_s = init_ball(scene, BLOOM_SCENE);
 //=====================================
 
-	let controls =
-	{
-		UpArrow : false,
-		DownArrow : false,
-		Wkey : false,
-		Skey : false
-	}
+let controls =
+{
+	UpArrow : false,
+	DownArrow : false,
+	Wkey : false,
+	Skey : false
+}
 
 const onKeyDown = function ( event )
 {
@@ -244,135 +214,48 @@ const onKeyUp = function ( event )
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
 
+//La game loop
+const animate = function ()
+{
+	requestAnimationFrame( animate );
+	moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM_SCENE);
+	updateAudioVisualizer(audio_s);
+	IncreaseBrightness = moveSun(SunMesh, IncreaseBrightness);
+	updateplane(plane_s, audio_s);
 
-
-
-
-			//====================================MOVE BALL==========================================
-			//Faire plusieurs mesh et dessiner des carrés entre les points de l'historique
-			//15 de profondeur = 14 carrés
-
-
-
-			function avg(arr)
-			{
-				var total = arr.reduce(function(sum, b) { return sum + b; });
-				return (total / arr.length);
-			}
-
-			function updateAudioVisualizer()
-			{
-				audio_s.FrqData = audio_s.analyser.getFrequencyData();
-				audio_s.avgFreq = audio_s.analyser.getAverageFrequency();
-				audio_s.lowerHalfArray = audio_s.FrqData.slice(0, (audio_s.FrqData.length/4) - 1);
-				audio_s.lowerAvg = avg(audio_s.lowerHalfArray);
-				audio_s.lowerAvgFr = audio_s.lowerAvg / audio_s.lowerHalfArray.length;
-				audio_s.lowerMidArray = audio_s.FrqData.slice((audio_s.FrqData.length/4) - 1, (2 * audio_s.FrqData.length/4) - 1);
-				audio_s.lowerMidAvg = avg(audio_s.lowerMidArray);
-				audio_s.lowerMidAvgFr = audio_s.lowerMidAvg / audio_s.lowerMidArray.length;
-				audio_s.upperMidArray = audio_s.FrqData.slice((2 * audio_s.FrqData.length/4) - 1, (3 * audio_s.FrqData.length/4) - 1);
-				audio_s.upperMidAvg = avg(audio_s.upperMidArray);
-				audio_s.upperMidAvgFr = audio_s.upperMidAvg / audio_s.upperMidArray.length;
-				  audio_s.upperHalfArray = audio_s.FrqData.slice( (3 * audio_s.FrqData.length/4) - 1, audio_s.FrqData.length - 1);
-				audio_s.upperAvg = avg(audio_s.upperHalfArray);
-				audio_s.upperAvgFr = audio_s.upperAvg / audio_s.upperHalfArray.length;
-
-				let j = 0;
-				for (let i = audio_s.FrqData.length - 1, len = 0; i >= len; i--)
-				{
-					audio_s.calc =  audio_s.avgFreq / 120 + audio_s.FrqData[j] / 40;
-					audio_s.calc_2 = audio_s.calc / 2;
-					audio_s.AudioMeshArray_L[i].scale.set(1, audio_s.calc, 1);
-					audio_s.AudioMeshArray_L[i].position.y = audio_s.calc_2;
-					audio_s.AudioMeshArray_R[i].scale.set(1, audio_s.calc, 1);
-					audio_s.AudioMeshArray_R[i].position.y = audio_s.calc_2;
-					audio_s.AudioMeshArray_OL[i].scale.set(1, audio_s.calc, 1);
-					audio_s.AudioMeshArray_OL[i].position.y = audio_s.calc_2;
-					audio_s.AudioMeshArray_OR[i].scale.set(1, audio_s.calc, 1);
-					audio_s.AudioMeshArray_OR[i].position.y = audio_s.calc_2;
-					j++;
-				}
-			}
-
-		var IncreaseBrightness = true;
-
-	function moveSun()
+	if (controls.UpArrow == true)
 	{
-		if (SunMesh)
+		if (paddles_s.bar_right.position.z - 4 > arena_s.top.position.z + 0.5)
 		{
-			SunMesh.traverse( function ( child ) {
-				if ( child.isMesh )
-				{
-					if (IncreaseBrightness == true)
-					{
-						child.material.emissiveIntensity += 0.002;
-						if (child.material.emissiveIntensity >= 0.75)
-							IncreaseBrightness = false;
-					}
-					else
-					{
-						child.material.emissiveIntensity -= 0.002;
-						if (child.material.emissiveIntensity <= 0.25)
-							IncreaseBrightness = true;
-					
-					}
-			}
-		} );
+	    	paddles_s.bar_right.position.z -= 0.5;
+			paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
 		}
 	}
-
-			//La game loop
-	const animate = function ()
+	if (controls.Wkey == true)
 	{
-		requestAnimationFrame( animate );
-		moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM_SCENE);
-
-		updateAudioVisualizer();
-		moveSun();
-
-		plane_s.vertices = plane_s.plane.geometry.attributes.position.array;
-		//Lower Average = les basses (aka les traits du centre)
-		for(let i = 0; i < plane_s.plane.geometry.attributes.position.count; i++){
-			plane_s.vertices[ i * 3 + 2 ] = ((audio_s.upperAvgFr / 10) + (- audio_s.upperMidAvgFr / 16) + (- audio_s.lowerMidAvgFr / 14) + (audio_s.lowerAvgFr / 12)) * plane_s.plane_seed[i];
-		}
-		plane_s.plane.geometry.attributes.position.needsUpdate = true;
-		plane_s.plane.geometry.verticesNeedUpdate = true;
-		plane_s.plane.geometry.normalsNeedUpdate = true;
-		plane_s.plane.geometry.computeVertexNormals();			
-		if (controls.UpArrow == true)
+		if (paddles_s.bar_left.position.z - 4 > arena_s.top.position.z + 0.5)
 		{
-			if (paddles_s.bar_right.position.z - 4 > arena_s.top.position.z + 0.5)
-			{
-    	    	paddles_s.bar_right.position.z -= 0.5;
-				paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
-			}
+	    	paddles_s.bar_left.position.z -= 0.5;
+			paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;
 		}
-		if (controls.Wkey == true)
+	}
+	if (controls.DownArrow == true)
+	{
+		if (paddles_s.bar_right.position.z + 4 < arena_s.bot.position.z - 0.5)
 		{
-			if (paddles_s.bar_left.position.z - 4 > arena_s.top.position.z + 0.5)
-			{
-    	    	paddles_s.bar_left.position.z -= 0.5;
-				paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;
-			}
+			paddles_s.bar_right.position.z += 0.5;
+			paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
 		}
-		if (controls.DownArrow == true)
+	}
+	if (controls.Skey == true)
+	{
+		if (paddles_s.bar_left.position.z + 4 < arena_s.bot.position.z - 0.5)
 		{
-			if (paddles_s.bar_right.position.z + 4 < arena_s.bot.position.z - 0.5)
-			{
-				paddles_s.bar_right.position.z += 0.5;
-				paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
-			}
+			paddles_s.bar_left.position.z += 0.5;
+			paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;
 		}
-		if (controls.Skey == true)
-		{
-			if (paddles_s.bar_left.position.z + 4 < arena_s.bot.position.z - 0.5)
-			{
-				paddles_s.bar_left.position.z += 0.5;
-				paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;
-			}
-		}
-		bloomComposer.render();
-		finalComposer.render();
-	};
-
-	animate();
+	}
+	bloomComposer.render();
+	finalComposer.render();
+};
+animate();
