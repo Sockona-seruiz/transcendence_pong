@@ -13,9 +13,9 @@ export function init_score(scene)
 	crystalshape.lineTo(x + 0.5, y - 0.5);
 	crystalshape.lineTo(0, 0);
 
-	const ONcrystalmaterialleft = new THREE.MeshBasicMaterial( { color: 0x42e7ff } );
-	const ONcrystalmaterialright = new THREE.MeshBasicMaterial( { color: 0xff5ec3 } );
-	const OFFcrystalmaterial = new THREE.MeshBasicMaterial( { color: 0x040404 } );
+	const ONcrystalmaterialleft = new THREE.MeshBasicMaterial( { color: 0x42e7ff, side:THREE.DoubleSide } );
+	const ONcrystalmaterialright = new THREE.MeshBasicMaterial( { color: 0xff5ec3, side:THREE.DoubleSide } );
+	const OFFcrystalmaterial = new THREE.MeshBasicMaterial( { color: 0x040404, side:THREE.DoubleSide } );
 
 	const crystalgeometry = new THREE.ShapeGeometry( crystalshape );
 	const crystalmeshTop = new THREE.Mesh( crystalgeometry, OFFcrystalmaterial ) ;
