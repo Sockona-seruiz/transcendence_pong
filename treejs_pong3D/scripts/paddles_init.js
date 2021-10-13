@@ -10,24 +10,22 @@ export function init_paddles(scene, config, Leftcol, Rightcol, BLOOM_SCENE)
 	const material_bar_right = new THREE.MeshStandardMaterial( { color: 0xffffff } );
 	const bar_right_msh = new THREE.Mesh( geometry_bar, material_bar_right );
 
-	const outline_geometry_bar = new THREE.BoxGeometry(1.2, 1.2, config.paddle_h + 0.2);
+	const outline_geometry_bar = new THREE.BoxGeometry(1.3, 1.3, config.paddle_h + 0.25);
 	var LeftoutlineMaterial= new THREE.MeshBasicMaterial( { color: Leftcol, side: THREE.BackSide } );
 	var LeftoutlineMesh = new THREE.Mesh( outline_geometry_bar, LeftoutlineMaterial );
-	LeftoutlineMesh.scale.multiplyScalar(1.05);
 	LeftoutlineMesh.layers.enable( BLOOM_SCENE );
 	scene.add( LeftoutlineMesh );
 
 	var RightoutlineMaterial= new THREE.MeshBasicMaterial( { color: Rightcol, side: THREE.BackSide } );
 	var RightoutlineMesh = new THREE.Mesh( outline_geometry_bar, RightoutlineMaterial );
-	RightoutlineMesh.scale.multiplyScalar(1.05);
 	RightoutlineMesh.layers.enable( BLOOM_SCENE );
 	scene.add( RightoutlineMesh );
 
-	var Left_bar_pos_x = - (config.arena_w / 2 - (config.paddle_h_2 + 1));
+	var Left_bar_pos_x = - (config.arena_w / 2 - 5);
 	bar_left_msh.position.x = Left_bar_pos_x ;
 	LeftoutlineMesh.position.x = bar_left_msh.position.x;
 
-	var Right_bar_pos_x = config.arena_w / 2 - (config.paddle_h_2 + 1);
+	var Right_bar_pos_x = config.arena_w / 2 - 5;
 	bar_right_msh.position.x = Right_bar_pos_x;
 	RightoutlineMesh.position.x = bar_right_msh.position.x;
 	scene.add( bar_left_msh, bar_right_msh, LeftoutlineMesh, RightoutlineMesh);

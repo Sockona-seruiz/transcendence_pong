@@ -44,11 +44,20 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 		{
 			ball_s.LeftHit = 1;
 			PosDiff = ball_s.ball.position.z - paddles_s.bar_left.position.z;
-			ball_s.BallAngle = Math.PI - ball_s.BallAngle - (PosDiff / 30);
+			// ball_s.BallAngle = Math.PI - ball_s.BallAngle - (PosDiff / 30);
+			ball_s.BallAngle = Math.PI - ball_s.BallAngle;
 			if (ball_s.BallAngle > PI_s.M_2PI)
 				ball_s.BallAngle -= PI_s.M_2PI;
 			else if (ball_s.BallAngle < 0)
 				ball_s.BallAngle += PI_s.M_2PI;
+			if (ball_s.BallAngle - (PosDiff/30) < PI_s.M_PI_2 || ball_s.BallAngle - (PosDiff/30) > PI_s.M_3PI_2)
+				ball_s.BallAngle -= PosDiff/30;
+
+			if (ball_s.BallAngle > PI_s.M_PI_2 - 0.15 && ball_s.BallAngle < PI_s.M_3PI_2 - 0.5)
+				ball_s.BallAngle = PI_s.M_PI_2 - 0.15
+			else if (ball_s.BallAngle < PI_s.M_3PI_2 + 0.15 && ball_s.BallAngle > PI_s.M_PI_2 + 0.5)
+				ball_s.BallAngle = PI_s.M_3PI_2 + 0.15
+
 			if (ball_s.Speed < ball_s.SpeedLimit)
 				ball_s.Speed += ball_s.SpeedIncrease;
 			ball_s.trainee_msh[0].material.color.setHex(paddles_s.left_col);
@@ -64,11 +73,21 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 		{
 		ball_s.RightHit = 1;
 		PosDiff = ball_s.ball.position.z - paddles_s.bar_right.position.z;
-		ball_s.BallAngle = Math.PI - ball_s.BallAngle + (PosDiff/30);
+		// ball_s.BallAngle = Math.PI - ball_s.BallAngle + (PosDiff/30);
+
+		ball_s.BallAngle = PI_s.M_PI - ball_s.BallAngle;
 		if (ball_s.BallAngle > PI_s.M_2PI)
 			ball_s.BallAngle -= PI_s.M_2PI;
 		else if (ball_s.BallAngle < 0)
 			ball_s.BallAngle += PI_s.M_2PI;
+		if (ball_s.BallAngle + (PosDiff/30) > PI_s.M_PI_2 && ball_s.BallAngle + (PosDiff/30) < PI_s.M_3PI_2)
+			ball_s.BallAngle += PosDiff/30;
+
+		if (ball_s.BallAngle < PI_s.M_PI_2 + 0.15)
+			ball_s.BallAngle = PI_s.M_PI_2 + 0.15
+		else if (ball_s.BallAngle > PI_s.M_3PI_2 - 0.15)
+			ball_s.BallAngle = PI_s.M_3PI_2 - 0.15
+
 		if (ball_s.Speed < ball_s.SpeedLimit)
 			ball_s.Speed += ball_s.SpeedIncrease;
 		ball_s.trainee_msh[0].material.color.setHex(paddles_s.right_col);
