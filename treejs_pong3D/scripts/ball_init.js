@@ -34,7 +34,7 @@ export function init_ball(scene, BLOOM_SCENE)
 		BallAngle : Math.PI,
 		material_msh : outline_mat,
 
-		history_depth : 30,
+		history_depth : 42,
 		pos_history_x : [0,0],
 		pos_history_z : [0,0],
 		trainee : null,
