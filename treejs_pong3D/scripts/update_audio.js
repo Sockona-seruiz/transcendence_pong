@@ -17,7 +17,7 @@ export function updateAudioVisualizer(audio_s)
 	audio_s.upperMidArray = audio_s.FrqData.slice((2 * audio_s.FrqData.length/4) - 1, (3 * audio_s.FrqData.length/4) - 1);
 	audio_s.upperMidAvg = avg(audio_s.upperMidArray);
 	audio_s.upperMidAvgFr = audio_s.upperMidAvg / audio_s.upperMidArray.length;
-	  audio_s.upperHalfArray = audio_s.FrqData.slice( (3 * audio_s.FrqData.length/4) - 1, audio_s.FrqData.length - 1);
+	audio_s.upperHalfArray = audio_s.FrqData.slice( (3 * audio_s.FrqData.length/4) - 1, audio_s.FrqData.length - 1);
 	audio_s.upperAvg = avg(audio_s.upperHalfArray);
 	audio_s.upperAvgFr = audio_s.upperAvg / audio_s.upperHalfArray.length;
 

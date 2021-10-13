@@ -1,9 +1,9 @@
 import * as THREE from '../three.js-dev/build/three.module.js';
 
-export function init_arena(scene, BLOOM_SCENE)
+export function init_arena(scene, config, BLOOM_SCENE)
 {
-	const geometry_edge_top = new THREE.BoxGeometry(60, 1, 1);
-	const geometry_edge_side = new THREE.BoxGeometry(1, 1, 41);
+	const geometry_edge_top = new THREE.BoxGeometry(config.arena_w, 1, 1);
+	const geometry_edge_side = new THREE.BoxGeometry(1, 1, config.arena_h + 1);
 
 	const material_edge = new THREE.MeshStandardMaterial( { color: 0xffffff } );
 
@@ -13,14 +13,14 @@ export function init_arena(scene, BLOOM_SCENE)
 	const edge_left = new THREE.Mesh( geometry_edge_side, material_edge );
 	const edge_right = new THREE.Mesh( geometry_edge_side, material_edge );
 
-	edge_top.position.z = -20;
-	edge_bot.position.z = 20;
-	edge_left.position.x = -30;
-	edge_right.position.x = 30;
+	edge_top.position.z = - config.arena_h / 2;
+	edge_bot.position.z = config.arena_h / 2;
+	edge_left.position.x = - config.arena_w / 2;
+	edge_right.position.x = config.arena_w / 2;
 	scene.add( edge_top, edge_bot, edge_left, edge_right );
 
 	var EdgeTopoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
-	const outline_geometry_edge_top = new THREE.BoxGeometry(61, 1.5, 1.5);
+	const outline_geometry_edge_top = new THREE.BoxGeometry(config.arena_w + 1, 1.5, 1.5);
 	var EdgeTopoutlineMesh = new THREE.Mesh( outline_geometry_edge_top, EdgeTopoutlineMaterial );
 	EdgeTopoutlineMesh.position.z = edge_top.position.z;
 
@@ -29,7 +29,7 @@ export function init_arena(scene, BLOOM_SCENE)
 	EdgeBotoutlineMesh.position.y -= 1
 
 	var EdgeSideoutlineMaterial= new THREE.MeshBasicMaterial( { color: 0xffffff, side: THREE.BackSide } );
-	const outline_geometry_edge_side = new THREE.BoxGeometry(1.5, 1.5, 41.5);
+	const outline_geometry_edge_side = new THREE.BoxGeometry(1.5, 1.5, config.arena_h + 1.5);
 	var EdgeLeftoutlineMesh = new THREE.Mesh( outline_geometry_edge_side, EdgeSideoutlineMaterial );
 	EdgeLeftoutlineMesh.position.x = edge_left.position.x;
 
@@ -42,7 +42,7 @@ export function init_arena(scene, BLOOM_SCENE)
 	EdgeRightoutlineMesh.layers.enable( BLOOM_SCENE );
 	scene.add( EdgeTopoutlineMesh, EdgeBotoutlineMesh, EdgeLeftoutlineMesh, EdgeRightoutlineMesh );
 
-	var arena_floor_geo = new THREE.PlaneGeometry(61, 40, 2, 2);
+	var arena_floor_geo = new THREE.PlaneGeometry(config.arena_w + 1, config.arena_h, 2, 2);
 	var arena_floor_Material = new THREE.MeshBasicMaterial({
 		color: 0x000000,
 		transparent: true,

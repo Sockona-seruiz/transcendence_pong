@@ -20,19 +20,34 @@ import { moveBall } from './Update_ball.js';
 import { updateAudioVisualizer } from './update_audio.js';
 import { updateplane } from './update_plane.js';
 
-//(FOV, Aspect Ratio, Début distance de rendu, fin)
+//Faire une structure de configuration (longueuer/largeur terrain / barres)
+
+var config = {
+	arena_w : 70,
+	arena_h : 50,
+	arena_h_2 : 0,
+	arena_size : 0,
+
+	paddle_w : 1,
+	paddle_h : 10,
+	paddle_h_2 : 0
+}
+config.paddle_h_2 = config.paddle_h / 2;
+config.arena_h_2 = config.arena_h / 2;
+
+//Camera =====
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 28;
 camera.position.y = 38;
 camera.rotation.x = -0.86;
 
-//Renderer
+//Render =====
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2( 0x000000, 0.001 );
 
-//===================================================================================================================================================
-const ENTIRE_SCENE = 0, BLOOM_SCENE = 1;
+//PostProcessing =====
+const BLOOM_SCENE = 1;
 
 const bloomLayer = new THREE.Layers();
 bloomLayer.set( BLOOM_SCENE );
@@ -45,22 +60,10 @@ const params = {
 	scene: "Scene with Glow"
 };
 
-const darkMaterial = new THREE.MeshBasicMaterial( { color: "black" } );
-const materials = {};
-
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.toneMapping = THREE.ReinhardToneMapping;
 document.body.appendChild( renderer.domElement );
-
-//Orbit Control (for spectators only)
-
-const controls_mouse = new OrbitControls( camera, renderer.domElement );
-controls_mouse.maxPolarAngle = Math.PI * 0.5;
-controls_mouse.minDistance = 1;
-controls_mouse.maxDistance = 100;
-
-//End of Orbit Control
 
 const renderScene = new RenderPass( scene, camera );
 
@@ -94,8 +97,15 @@ const finalComposer = new EffectComposer( renderer );
 finalComposer.addPass( renderScene );
 finalComposer.addPass( finalPass );
 
-const mouse = new THREE.Vector2();
 
+//Orbit Control (for spectators only) =====
+const controls_mouse = new OrbitControls( camera, renderer.domElement );
+controls_mouse.maxPolarAngle = Math.PI * 0.5;
+controls_mouse.minDistance = 1;
+controls_mouse.maxDistance = 100;
+//End of Orbit Control
+
+//Window Resize =====
 window.onresize = function ()
 {
 	const width = window.innerWidth;
@@ -117,10 +127,9 @@ window.onresize = function ()
 
 	bloomComposer.setSize( width / 2, height / 2);
 	finalComposer.setSize( width, height );
-
-	// render();
 };
 
+//Var Setup =====
 var PI_s = 
 {
 	M_PI : Math.PI,
@@ -132,8 +141,9 @@ var PI_s =
 var Leftcol = 0x0ae0ff;
 var Rightcol = 0xff13a5;
 
-var audio_s = init_audio(scene, BLOOM_SCENE);
-//Sun=========================================
+var audio_s = init_audio(scene, config, BLOOM_SCENE);
+
+//Sun =====
 var IncreaseBrightness = true;
 var SunMesh;
 var gltfloader = new GLTFLoader().setPath( 'models/' );
@@ -145,7 +155,7 @@ gltfloader.load( 'SunFull.gltf', function ( gltf )
 		if ( child.isMesh )
 		{
 			child.material.emissiveIntensity = 0.3;
-			child.position.set(0, 11, -24);
+			child.position.set(0, 11, - (config.arena_h_2 + 4));
 		}
 	} );
 	SunMesh = gltf.scene;
@@ -155,14 +165,14 @@ gltfloader.load( 'SunFull.gltf', function ( gltf )
 //Init fcts============================
 var plane_s = init_plane(scene);
 
-var score_s = init_score(scene);
+var score_s = init_score(scene, config);
 updateScore(score_s);
 
-let paddles_s = init_paddles(scene, Leftcol, Rightcol, BLOOM_SCENE);
-let arena_s = init_arena(scene, BLOOM_SCENE);
+let paddles_s = init_paddles(scene, config, Leftcol, Rightcol, BLOOM_SCENE);
+let arena_s = init_arena(scene, config, BLOOM_SCENE);
 let ball_s = init_ball(scene, BLOOM_SCENE);
-//=====================================
 
+//Keys =====
 let controls =
 {
 	UpArrow : false,
@@ -214,18 +224,18 @@ const onKeyUp = function ( event )
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
 
-//La game loop
+//La game loop ======
 const animate = function ()
 {
 	requestAnimationFrame( animate );
-	moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM_SCENE);
+	moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, config, BLOOM_SCENE);
 	updateAudioVisualizer(audio_s);
 	IncreaseBrightness = moveSun(SunMesh, IncreaseBrightness);
 	updateplane(plane_s, audio_s);
 
 	if (controls.UpArrow == true)
 	{
-		if (paddles_s.bar_right.position.z - 4 > arena_s.top.position.z + 0.5)
+		if (paddles_s.bar_right.position.z - config.paddle_h_2 > arena_s.top.position.z + 1.1)
 		{
 	    	paddles_s.bar_right.position.z -= 0.5;
 			paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
@@ -233,7 +243,7 @@ const animate = function ()
 	}
 	if (controls.Wkey == true)
 	{
-		if (paddles_s.bar_left.position.z - 4 > arena_s.top.position.z + 0.5)
+		if (paddles_s.bar_left.position.z - config.paddle_h_2 > arena_s.top.position.z + 1.1)
 		{
 	    	paddles_s.bar_left.position.z -= 0.5;
 			paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;
@@ -241,7 +251,7 @@ const animate = function ()
 	}
 	if (controls.DownArrow == true)
 	{
-		if (paddles_s.bar_right.position.z + 4 < arena_s.bot.position.z - 0.5)
+		if (paddles_s.bar_right.position.z + config.paddle_h_2 < arena_s.bot.position.z - 1.1)
 		{
 			paddles_s.bar_right.position.z += 0.5;
 			paddles_s.bar_right_out.position.z = paddles_s.bar_right.position.z;
@@ -249,7 +259,7 @@ const animate = function ()
 	}
 	if (controls.Skey == true)
 	{
-		if (paddles_s.bar_left.position.z + 4 < arena_s.bot.position.z - 0.5)
+		if (paddles_s.bar_left.position.z + config.paddle_h_2 < arena_s.bot.position.z - 1.1)
 		{
 			paddles_s.bar_left.position.z += 0.5;
 			paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;

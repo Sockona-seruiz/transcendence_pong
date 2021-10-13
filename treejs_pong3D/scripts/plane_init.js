@@ -24,8 +24,7 @@ export function init_plane(scene)
 		emissiveIntensity : 0.085,
 		emissiveMap : texture
     });
-
-    
+  
 	var plane_msh = new THREE.Mesh(planeGeometry, planeMaterial);
     var Underplane_msh = new THREE.Mesh(UnderplaneGeometry, UnderplaneMaterial);
 	plane_msh.rotation.x += M_PI_2;

@@ -1,7 +1,7 @@
 import * as THREE from '../three.js-dev/build/three.module.js';
 import { resetParams } from './reset_params.js';
 
-export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM_SCENE)
+export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, config, BLOOM_SCENE)
 {
 	var PosDiff = 0;
 
@@ -18,7 +18,6 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM
 	ball_s.trainee = new THREE.Shape();
 
 	ball_s.trainee.moveTo(ball_s.pos_history_x[0], ball_s.pos_history_z[0] - 0.5);
-		
 	ball_s.trainee.lineTo(ball_s.pos_history_x[1], ball_s.pos_history_z[1] - 0.5);
 	ball_s.trainee.lineTo(ball_s.pos_history_x[1], ball_s.pos_history_z[1] + 0.5);
 	ball_s.trainee.lineTo(ball_s.pos_history_x[0], ball_s.pos_history_z[0] + 0.5);
@@ -30,7 +29,6 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM
 	ball_s.trainee_msh[0].rotation.x += PI_s.M_PI_2;
 	ball_s.trainee_msh[0].layers.enable( BLOOM_SCENE );
 	scene.add(ball_s.trainee_msh[0]);
-
 	
 	ball_s.ball.position.x += Math.cos(ball_s.BallAngle) * ball_s.Speed;
 	ball_s.ball.position.z += (Math.sin(ball_s.BallAngle) * -1) * ball_s.Speed;
@@ -40,7 +38,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM
 	ball_s.light.position.z = ball_s.ball.position.z;
 	//  Est dans la barre de gauche en X                 (est dans la barre en Y)
 	//Une barre fait 8 de hauteur
-	if (ball_s.ball.position.x >= paddles_s.bar_left.position.x - 1 && ball_s.ball.position.x <= paddles_s.bar_left.position.x + 1 && (ball_s.ball.position.z - 0.5 <= paddles_s.bar_left.position.z + 4 && ball_s.ball.position.z + 0.5 >= paddles_s.bar_left.position.z - 4))
+	if (ball_s.ball.position.x >= paddles_s.bar_left.position.x - 1 && ball_s.ball.position.x <= paddles_s.bar_left.position.x + 1 && (ball_s.ball.position.z - 0.5 <= paddles_s.bar_left.position.z + config.paddle_h_2 && ball_s.ball.position.z + 0.5 >= paddles_s.bar_left.position.z - config.paddle_h_2))
 	{
 		if (ball_s.LeftHit == 0)
 		{
@@ -60,7 +58,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, BLOOM
 		ball_s.RightHit = 0;
 	}
 
-	if (ball_s.ball.position.x >= paddles_s.bar_right.position.x - 1 && ball_s.ball.position.x <= paddles_s.bar_right.position.x + 1 && (ball_s.ball.position.z - 0.5 <= paddles_s.bar_right.position.z + 4 && ball_s.ball.position.z + 0.5 >= paddles_s.bar_right.position.z - 4))
+	if (ball_s.ball.position.x >= paddles_s.bar_right.position.x - 1 && ball_s.ball.position.x <= paddles_s.bar_right.position.x + 1 && (ball_s.ball.position.z - 0.5 <= paddles_s.bar_right.position.z + config.paddle_h_2 && ball_s.ball.position.z + 0.5 >= paddles_s.bar_right.position.z - config.paddle_h_2))
 	{
 		if (ball_s.RightHit == 0)
 		{

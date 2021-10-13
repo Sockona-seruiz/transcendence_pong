@@ -1,6 +1,6 @@
 import * as THREE from '../three.js-dev/build/three.module.js';
 
-export function init_score(scene)
+export function init_score(scene, config)
 {
 	const x = 0, y = 0;
 
@@ -76,10 +76,10 @@ export function init_score(scene)
 		rightleftcrystal[i].position.x += 16.5;
 		rightrithcrystal[i].position.x += 26.5;
 
-		leftleftcrystal[i].position.z -= 30;
-		leftrightcrystal[i].position.z -= 30;
-		rightleftcrystal[i].position.z -= 30;
-		rightrithcrystal[i].position.z -= 30;
+		leftleftcrystal[i].position.z -= config.arena_h_2 + 10;
+		leftrightcrystal[i].position.z -= config.arena_h_2 + 10;
+		rightleftcrystal[i].position.z -= config.arena_h_2 + 10;
+		rightrithcrystal[i].position.z -= config.arena_h_2 + 10;
 
 		scene.add( leftleftcrystal[i], leftrightcrystal[i], rightleftcrystal[i], rightrithcrystal[i]);
 	}

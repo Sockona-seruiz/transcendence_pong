@@ -1,6 +1,6 @@
 import * as THREE from '../three.js-dev/build/three.module.js';
 
-export function init_audio(scene, BLOOM_SCENE)
+export function init_audio(scene, config, BLOOM_SCENE)
 {
 	var audiolist = [];
 	audiolist.unshift("../sounds/far-cry-3-blood-dragon-ost-power-core-track-07.mp3");
@@ -29,7 +29,6 @@ export function init_audio(scene, BLOOM_SCENE)
 		audio.play();
 	});
 
-	// About fftSize https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/fftSize
 	const analyser = new THREE.AudioAnalyser(audio, fftSize);
 
 	var data = analyser.getFrequencyData();
@@ -44,16 +43,16 @@ export function init_audio(scene, BLOOM_SCENE)
 
 	const geometry_audio_outline = new THREE.BoxGeometry(1.2, 1.2, 1.2);
 
-		var leftbar_loader = new THREE.TextureLoader();
-		var leftbar_texture = leftbar_loader.load( 'textures/gradient_blue_pink.png' );
+	var leftbar_loader = new THREE.TextureLoader();
+	var leftbar_texture = leftbar_loader.load( 'textures/gradient_blue_pink.png' );
 
-		const leftmaterial_audio_outline= new THREE.MeshPhongMaterial({
-			side: THREE.BackSide,
-			wireframe: false,
-			emissive : 0xffffff,
-			emissiveIntensity : 0.5,
-			emissiveMap : leftbar_texture
-	    });
+	const leftmaterial_audio_outline= new THREE.MeshPhongMaterial({
+		side: THREE.BackSide,
+		wireframe: false,
+		emissive : 0xffffff,
+		emissiveIntensity : 0.5,
+		emissiveMap : leftbar_texture
+	});
 
 	for (let i = 0, len = data.length; i < len; i++)
 	{
@@ -61,8 +60,8 @@ export function init_audio(scene, BLOOM_SCENE)
 		AudioMeshArray_Right.unshift(new THREE.Mesh( geometry_audio, material_audio ));
 		AudioMeshArray_Left[0].position.z = i * 2.65 - 20;
 		AudioMeshArray_Right[0].position.z = i * 2.65 - 20;
-		AudioMeshArray_Left[0].position.x = -32;
-		AudioMeshArray_Right[0].position.x = 32;
+		AudioMeshArray_Left[0].position.x = - (config.arena_w / 2 + 2);
+		AudioMeshArray_Right[0].position.x = config.arena_w / 2 + 2;
 		AudioMeshArray_Left[0].position.y = -2;
 		AudioMeshArray_Right[0].position.y = -2;
 
@@ -72,8 +71,8 @@ export function init_audio(scene, BLOOM_SCENE)
 		AudioMeshArray_outline_Right[0].layers.enable( BLOOM_SCENE );
 		AudioMeshArray_outline_Left[0].position.z = i * 2.65 - 20;
 		AudioMeshArray_outline_Right[0].position.z = i * 2.65 - 20;
-		AudioMeshArray_outline_Left[0].position.x = -32;
-		AudioMeshArray_outline_Right[0].position.x = 32;
+		AudioMeshArray_outline_Left[0].position.x =  - (config.arena_w / 2 + 2);
+		AudioMeshArray_outline_Right[0].position.x =  config.arena_w / 2 + 2;
 		AudioMeshArray_outline_Left[0].position.y = -2;
 		AudioMeshArray_outline_Right[0].position.y = -2;
 

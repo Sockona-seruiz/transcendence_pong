@@ -176,15 +176,3 @@ function updateScore(score_s)
 	drawfct[rscoredizaine](score_s.crystals[2], false, score_s);
 	drawfct[rscoreunite](score_s.crystals[3], false, score_s);
 }
-
-/*
-	let score_s = {
-		crystals : [],
-		ONmatleft : ONcrystalmaterialleft,
-		ONmatright : ONcrystalmaterialright,
-		OFFmat : OFFcrystalmaterial,
-
-		LeftScore : 0,
-		RightScore : 0
-	}
-*/
