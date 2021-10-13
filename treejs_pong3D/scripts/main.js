@@ -24,6 +24,7 @@ import { updateplane } from './update_plane.js';
 
 var config = {
 	arena_w : 70,
+	arena_w_2 : 0,
 	arena_h : 50,
 	arena_h_2 : 0,
 	arena_size : 0,
@@ -34,10 +35,11 @@ var config = {
 }
 config.paddle_h_2 = config.paddle_h / 2;
 config.arena_h_2 = config.arena_h / 2;
+config.arena_w_2 = config.arena_w / 2;
 
 //Camera =====
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.z = 28;
+camera.position.z = 30;
 camera.position.y = 38;
 camera.rotation.x = -0.86;
 
@@ -103,6 +105,7 @@ const controls_mouse = new OrbitControls( camera, renderer.domElement );
 controls_mouse.maxPolarAngle = Math.PI * 0.5;
 controls_mouse.minDistance = 1;
 controls_mouse.maxDistance = 100;
+camera.rotation.x = -0.86;
 //End of Orbit Control
 
 //Window Resize =====
@@ -223,6 +226,78 @@ const onKeyUp = function ( event )
 
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
+//Fireworks
+
+
+const vertices = [];
+
+for ( let i = 0; i < 1000; i ++ ) {
+
+	const x = THREE.MathUtils.randFloatSpread( 500 );
+	const y = THREE.MathUtils.randFloatSpread( 500 );
+	const z = THREE.MathUtils.randFloatSpread( 500 );
+
+	if (x < config.arena_w_2 + 10 && x > - config.arena_w_2 - 10 && y > -10 && y < 60 && z < config.arena_h_2 + 10 && z > - config.arena_h_2 - 10)
+		i--;
+	else
+		vertices.push( x, y, z );
+
+}
+
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+
+const material = new THREE.PointsMaterial( { color: 0x888888 } );
+
+const points = new THREE.Points( geometry, material );
+
+scene.add( points );
+
+var firework_n = 150;
+
+function setFirework(fireworks)
+{
+	var positions = fireworks.geometry.attributes.position.array;
+
+	var x, y, z;
+	var	currentIndex = 0;
+
+	for ( var i = 0; i < firework_n * 3; i ++ ) 
+	{
+	// x = ( Math.random() - 0.5 ) * 300;
+	// y = ( Math.random() - 0.5 ) * 300;
+	// z = ( Math.random() - 0.5 ) * 300;
+	positions[ currentIndex++ ] = 0;
+	positions[ currentIndex++ ] = currentIndex;
+	positions[ currentIndex++ ] = 0;
+  	}
+	  fireworks.geometry.attributes.position.needsUpdate = true;	
+	//   fireworks.geometry.setDrawRange( 0, firework_n );
+//    update();
+}
+
+function launchFirework(x, y, z)
+{
+	// const firework_v = [];
+
+	// firework_v.push(x, y, z);
+	const firework_geo = new THREE.BufferGeometry();
+	var firework_pos = new Float32Array( firework_n * 3 );
+	firework_geo.setAttribute( 'position', new THREE.BufferAttribute( firework_pos, 3 ) );
+	const firework_m = new THREE.PointsMaterial( { color: 0x888888 } );
+
+	const fireworks = new THREE.Points( firework_geo, firework_m );
+
+	scene.add(fireworks);
+	setFirework(fireworks);
+
+	// while (fireworks[0].position.x < x + 20)
+	// 	fireworks[0].position.x += 0.05;
+}
+
+launchFirework(0, 0, 0);
+
+
 
 //La game loop ======
 const animate = function ()
