@@ -226,9 +226,8 @@ const onKeyUp = function ( event )
 
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
-//Fireworks
 
-
+//Stars
 const vertices = [];
 
 for ( let i = 0; i < 1000; i ++ ) {
@@ -253,30 +252,52 @@ const points = new THREE.Points( geometry, material );
 
 scene.add( points );
 
+//Fireworks
+
 var firework_n = 150;
 
-function setFirework(fireworks)
+function sleep(ms)	{
+	return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+async function setFirework_pos(fireworks, x, y, z, elevation)
 {
 	var positions = fireworks.geometry.attributes.position.array;
 
 	var x, y, z;
 	var	currentIndex = 0;
 
-	for ( var i = 0; i < firework_n * 3; i ++ ) 
+	for (let j = 0; j < elevation; j++)
 	{
-	// x = ( Math.random() - 0.5 ) * 300;
-	// y = ( Math.random() - 0.5 ) * 300;
-	// z = ( Math.random() - 0.5 ) * 300;
-	positions[ currentIndex++ ] = 0;
-	positions[ currentIndex++ ] = currentIndex;
-	positions[ currentIndex++ ] = 0;
-  	}
-	  fireworks.geometry.attributes.position.needsUpdate = true;	
-	//   fireworks.geometry.setDrawRange( 0, firework_n );
-//    update();
+		for ( let i = 0; i < firework_n * 3; i ++ ) 
+		{
+			positions[ currentIndex++ ] = x;
+			if (currentIndex == 1 && j > 1)
+				positions[ currentIndex++ ] = y - 2;
+			else if (currentIndex == 4 && j > 3)
+				positions[ currentIndex++ ] = y - 4;
+			else
+				positions[ currentIndex++ ] = y;
+			
+			// positions[currentIndex - 6] = y - 2;
+			positions[ currentIndex++ ] = z;
+		}
+		y += 1;
+		currentIndex = 0;
+		fireworks.geometry.attributes.position.needsUpdate = true;
+		await sleep(30);
+	}
+	y -= 1;
+	positions[1] = y;
+	positions[4] = y - 2;
+	fireworks.geometry.attributes.position.needsUpdate = true;
+	await sleep(30);
+	positions[4] = y;
+	fireworks.geometry.attributes.position.needsUpdate = true;
+	//Explode Here
 }
 
-function launchFirework(x, y, z)
+function launchFirework(x, y, z, elevation)
 {
 	// const firework_v = [];
 
@@ -289,13 +310,13 @@ function launchFirework(x, y, z)
 	const fireworks = new THREE.Points( firework_geo, firework_m );
 
 	scene.add(fireworks);
-	setFirework(fireworks);
+	setFirework_pos(fireworks, x, y, z, elevation);
 
 	// while (fireworks[0].position.x < x + 20)
 	// 	fireworks[0].position.x += 0.05;
 }
 
-launchFirework(0, 0, 0);
+launchFirework(0, 0, 0, 25);
 
 
 
