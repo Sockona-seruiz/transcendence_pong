@@ -19,6 +19,7 @@ import { moveSun } from './update_sun.js';
 import { moveBall } from './Update_ball.js';
 import { updateAudioVisualizer } from './update_audio.js';
 import { updateplane } from './update_plane.js';
+import { launchFirework } from './fireworks.js';
 
 //Faire une structure de configuration (longueuer/largeur terrain / barres)
 
@@ -227,6 +228,43 @@ const onKeyUp = function ( event )
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
 
+// const pointer = new THREE.Vector2();
+
+// function onPointerMove( event ) {
+
+// 	// if ( selectedObject ) {
+
+// 	// 	selectedObject.material.color.set( '#69f' );
+// 	// 	selectedObject = null;
+
+// 	// }
+
+// 	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+// 	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+// 	raycaster.setFromCamera( pointer, camera );
+
+	
+// 	// const intersects = raycaster.intersectObject( group, true );
+
+// 	// if ( intersects.length > 0 ) {
+
+// 	// 	const res = intersects.filter( function ( res ) {
+
+// 	// 		return res && res.object;
+
+// 	// 	} )[ 0 ];
+
+// 	// 	if ( res && res.object ) {
+
+// 	// 		selectedObject = res.object;
+// 	// 		selectedObject.material.color.set( '#f00' );
+
+// 	// 	}
+// 	launchFirework(0 , 0, 0, 20);
+// 	}
+// 	document.addEventListener( 'pointermove', onPointerMove );
+
 //Stars
 const vertices = [];
 
@@ -254,69 +292,7 @@ scene.add( points );
 
 //Fireworks
 
-var firework_n = 150;
-
-function sleep(ms)	{
-	return new Promise(resolve => setTimeout(resolve, ms));
-	}
-
-async function setFirework_pos(fireworks, x, y, z, elevation)
-{
-	var positions = fireworks.geometry.attributes.position.array;
-
-	var x, y, z;
-	var	currentIndex = 0;
-
-	for (let j = 0; j < elevation; j++)
-	{
-		for ( let i = 0; i < firework_n * 3; i ++ ) 
-		{
-			positions[ currentIndex++ ] = x;
-			if (currentIndex == 1 && j > 1)
-				positions[ currentIndex++ ] = y - 2;
-			else if (currentIndex == 4 && j > 3)
-				positions[ currentIndex++ ] = y - 4;
-			else
-				positions[ currentIndex++ ] = y;
-			
-			// positions[currentIndex - 6] = y - 2;
-			positions[ currentIndex++ ] = z;
-		}
-		y += 1;
-		currentIndex = 0;
-		fireworks.geometry.attributes.position.needsUpdate = true;
-		await sleep(30);
-	}
-	y -= 1;
-	positions[1] = y;
-	positions[4] = y - 2;
-	fireworks.geometry.attributes.position.needsUpdate = true;
-	await sleep(30);
-	positions[4] = y;
-	fireworks.geometry.attributes.position.needsUpdate = true;
-	//Explode Here
-}
-
-function launchFirework(x, y, z, elevation)
-{
-	// const firework_v = [];
-
-	// firework_v.push(x, y, z);
-	const firework_geo = new THREE.BufferGeometry();
-	var firework_pos = new Float32Array( firework_n * 3 );
-	firework_geo.setAttribute( 'position', new THREE.BufferAttribute( firework_pos, 3 ) );
-	const firework_m = new THREE.PointsMaterial( { color: 0x888888 } );
-
-	const fireworks = new THREE.Points( firework_geo, firework_m );
-
-	scene.add(fireworks);
-	setFirework_pos(fireworks, x, y, z, elevation);
-
-	// while (fireworks[0].position.x < x + 20)
-	// 	fireworks[0].position.x += 0.05;
-}
-
-launchFirework(0, 0, 0, 25);
+// var firework_n = 50;
 
 
 
@@ -361,6 +337,7 @@ const animate = function ()
 			paddles_s.bar_left_out.position.z = paddles_s.bar_left.position.z;
 		}
 	}
+	// launchFirework(scene, 0 , 0, 0, 20, 20);
 	bloomComposer.render();
 	finalComposer.render();
 };

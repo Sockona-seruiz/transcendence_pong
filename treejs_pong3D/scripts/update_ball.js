@@ -1,5 +1,6 @@
 import * as THREE from '../three.js-dev/build/three.module.js';
 import { resetParams } from './reset_params.js';
+import { launchFirework } from './fireworks.js';
 
 export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, config, BLOOM_SCENE)
 {
@@ -110,6 +111,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 	{
 		score_s.RightScore += 1;
 		updateScore(score_s);
+		launchFirework(scene, ball_s.ball.position.x,0,ball_s.ball.position.z, 20, 40, paddles_s.right_col);
 		resetParams(ball_s, paddles_s, 0);
 	}
 
@@ -117,6 +119,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 	{
 		score_s.LeftScore += 1;
 		updateScore(score_s);
+		launchFirework(scene, ball_s.ball.position.x,0,ball_s.ball.position.z, 20, 40, paddles_s.left_col);
 		resetParams(ball_s, paddles_s, 1);
 	}
 }
