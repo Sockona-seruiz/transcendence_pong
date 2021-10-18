@@ -4,7 +4,9 @@ export function resetParams(ball_s, paddles_s, x)
 	ball_s.ball.position.z = 0;
 	ball_s.ball_outline.position.x = 0;
 	ball_s.ball_outline.position.z = 0;
-	ball_s.trainee_msh[0].material.color.setHex(0xffffff);
+	// ball_s.trainee_msh[0].material.color.setHex(0xffffff);
+	// ball_s.trainee_wmat.color.setHex(0xffffff);
+	// ball_s.trainee_msh[0].material = ball_s.trainee_wmat;
 	ball_s.ball_outline.material.color.setHex(0xffffff);
 	ball_s.light.color.setHex(0xffffff);
 	ball_s.pos_history_x.unshift(0);

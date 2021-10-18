@@ -21,10 +21,16 @@ export function init_ball(scene, BLOOM_SCENE)
 	BallLight.position.set(0, 4, 0);
 	scene.add(BallLight);
 
-	const outline_mat = new THREE.MeshBasicMaterial({
+	const trainee_c_mat = new THREE.MeshBasicMaterial({
 		color: 0xffffff,
 		side: THREE.DoubleSide,
 	});
+
+	const trainee_w_mat = new THREE.MeshBasicMaterial({
+		color: 0xffffff,
+		side: THREE.DoubleSide,
+	});
+	
 
 	let ball_s =
 	{
@@ -32,7 +38,8 @@ export function init_ball(scene, BLOOM_SCENE)
 		ball_outline : BalloutlineMesh,
 		light : BallLight,
 		BallAngle : Math.PI,
-		material_msh : outline_mat,
+		trainee_cmat : trainee_c_mat,	
+		trainee_wmat : trainee_w_mat,
 
 		history_depth : 42,
 		pos_history_x : [0,0],

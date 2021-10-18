@@ -26,7 +26,16 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 	ball_s.old_trainee_pos_x = ball_s.pos_history_x[0 + 1];
 	ball_s.old_trainee_pos_z = ball_s.pos_history_z[0 + 1] + 0.25;
 	ball_s.trainee_geo = new THREE.ShapeGeometry(ball_s.trainee);
-	ball_s.trainee_msh.unshift (new THREE.Mesh(ball_s.trainee_geo, ball_s.material_msh));
+
+	if (ball_s.LeftHit == 0 && ball_s.RightHit == 0)
+	{
+		ball_s.trainee_wmat.color.setHex(0xffffff);
+		ball_s.trainee_msh.unshift (new THREE.Mesh(ball_s.trainee_geo, ball_s.trainee_wmat));
+	}
+	else
+		ball_s.trainee_msh.unshift (new THREE.Mesh(ball_s.trainee_geo, ball_s.trainee_cmat));
+
+	// ball_s.trainee_msh.unshift (new THREE.Mesh(ball_s.trainee_geo, ball_s.material_msh));
 	ball_s.trainee_msh[0].rotation.x += PI_s.M_PI_2;
 	ball_s.trainee_msh[0].layers.enable( BLOOM_SCENE );
 	scene.add(ball_s.trainee_msh[0]);
@@ -61,6 +70,9 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 
 			if (ball_s.Speed < ball_s.SpeedLimit)
 				ball_s.Speed += ball_s.SpeedIncrease;
+			// ball_s.trainee_msh[0].material = ball_s.trainee_lmat;
+			ball_s.trainee_msh[0].material = ball_s.trainee_cmat;
+			ball_s.trainee_wmat.color.setHex(paddles_s.left_col);
 			ball_s.trainee_msh[0].material.color.setHex(paddles_s.left_col);
 			ball_s.ball_outline.material.color.setHex(paddles_s.left_col);
 			ball_s.light.color.setHex(paddles_s.left_col);
@@ -91,6 +103,9 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 
 		if (ball_s.Speed < ball_s.SpeedLimit)
 			ball_s.Speed += ball_s.SpeedIncrease;
+		// ball_s.trainee_msh[0].material = ball_s.trainee_rmat;
+		ball_s.trainee_msh[0].material = ball_s.trainee_cmat;
+		ball_s.trainee_wmat.color.setHex(paddles_s.right_col);
 		ball_s.trainee_msh[0].material.color.setHex(paddles_s.right_col);
 		ball_s.ball_outline.material.color.setHex(paddles_s.right_col);
 		ball_s.light.color.setHex(paddles_s.right_col);
@@ -111,7 +126,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 	{
 		score_s.RightScore += 1;
 		updateScore(score_s);
-		launchFirework(scene, ball_s.ball.position.x,0,ball_s.ball.position.z, 20, 40, paddles_s.right_col);
+		launchFirework(scene, ball_s.ball.position.x + 1,0,ball_s.ball.position.z, 20, 25, paddles_s.right_col);
 		resetParams(ball_s, paddles_s, 0);
 	}
 
@@ -119,7 +134,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 	{
 		score_s.LeftScore += 1;
 		updateScore(score_s);
-		launchFirework(scene, ball_s.ball.position.x,0,ball_s.ball.position.z, 20, 40, paddles_s.left_col);
+		launchFirework(scene, ball_s.ball.position.x - 1,0,ball_s.ball.position.z, 20, 25, paddles_s.left_col);
 		resetParams(ball_s, paddles_s, 1);
 	}
 }

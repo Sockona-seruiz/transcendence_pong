@@ -29,14 +29,14 @@ async function setFirework_pos(scene, fireworks, firework_geo, firework_m, size,
 		y += 1;
 		currentIndex = 0;
 		fireworks.geometry.attributes.position.needsUpdate = true;
-		await sleep(30 + j);
+		await sleep(20 + j);
 	}
 	y -= 1;
-	await sleep(30);
+	await sleep(20);
 	positions[1] = y;
 	positions[4] = y - 2;
 	fireworks.geometry.attributes.position.needsUpdate = true;
-	await sleep(60 + elevation);
+	// await sleep(40 + elevation);
 	positions[4] = y;
 	fireworks.geometry.attributes.position.needsUpdate = true;
 
