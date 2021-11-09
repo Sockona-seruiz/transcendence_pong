@@ -3,19 +3,19 @@ import * as THREE from '../three.js-dev/build/three.module.js';
 export function init_audio(scene, config, BLOOM_SCENE)
 {
 	var audiolist = [];
-	audiolist.unshift("../sounds/far-cry-3-blood-dragon-ost-power-core-track-07.mp3");
-	audiolist.unshift('../sounds/dryskill-burnout-dubstep-synthwave.mp3');
-	audiolist.unshift('../sounds/far-cry-3-blood-dragon-ost-omega-force-track-16.mp3');
-	audiolist.unshift('../sounds/far-cry-3-blood-dragon-ost-sloans-assault-track-10.mp3');
-	audiolist.unshift('../sounds/legend-of-zelda-theme-but-its-synthwave.mp3');
-	audiolist.unshift('../sounds/mdk-press-start-free-download.mp3');
-	audiolist.unshift('../sounds/main_song.mp3');
-	audiolist.unshift('../sounds/miami-nights-1984-accelerated.mp3');
-	audiolist.unshift('../sounds/powercyan-plutocracy-ephixa-remix-synthwave-dubstep.mp3');
-	audiolist.unshift('../sounds/skrillex-bangarang-feat-sirah-official-music-video.mp3');
-	audiolist.unshift('../sounds/skrillex-first-of-the-year-equinox.mp3');
-	audiolist.unshift('../sounds/waterflame-blast-processing.mp3');
-	audiolist.unshift('../sounds/dirty-androids-midnight-lady.mp3');
+	// audiolist.unshift("../sounds/far-cry-3-blood-dragon-ost-power-core-track-07.mp3");
+	// audiolist.unshift('../sounds/dryskill-burnout-dubstep-synthwave.mp3');
+	// audiolist.unshift('../sounds/far-cry-3-blood-dragon-ost-omega-force-track-16.mp3');
+	// audiolist.unshift('../sounds/far-cry-3-blood-dragon-ost-sloans-assault-track-10.mp3');
+	audiolist.unshift('./sounds/legend-of-zelda-theme-but-its-synthwave.mp3');
+	// audiolist.unshift('../sounds/mdk-press-start-free-download.mp3');
+	audiolist.unshift('./sounds/main_song.mp3');
+	audiolist.unshift('./sounds/miami-nights-1984-accelerated.mp3');
+	audiolist.unshift('./sounds/powercyan-plutocracy-ephixa-remix-synthwave-dubstep.mp3');
+	// audiolist.unshift('../sounds/skrillex-bangarang-feat-sirah-official-music-video.mp3');
+	// audiolist.unshift('../sounds/skrillex-first-of-the-year-equinox.mp3');
+	// audiolist.unshift('../sounds/waterflame-blast-processing.mp3');
+	// audiolist.unshift('../sounds/dirty-androids-midnight-lady.mp3');
 
 	const fftSize = 32;
 
