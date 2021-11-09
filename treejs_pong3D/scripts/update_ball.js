@@ -126,7 +126,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 	{
 		score_s.RightScore += 1;
 		updateScore(score_s);
-		launchFirework(scene, ball_s.ball.position.x + 1,0,ball_s.ball.position.z, 20, 25, paddles_s.right_col);
+		launchFirework(scene, ball_s.ball.position.x + 1,0,ball_s.ball.position.z, 20, 25, ball_s.ball_outline.material.color);
 		resetParams(ball_s, paddles_s, 0);
 	}
 
@@ -134,7 +134,7 @@ export function moveBall(ball_s, paddles_s, arena_s, score_s, scene, PI_s, confi
 	{
 		score_s.LeftScore += 1;
 		updateScore(score_s);
-		launchFirework(scene, ball_s.ball.position.x - 1,0,ball_s.ball.position.z, 20, 25, paddles_s.left_col);
+		launchFirework(scene, ball_s.ball.position.x - 1,0,ball_s.ball.position.z, 20, 25, ball_s.ball_outline.material.color);
 		resetParams(ball_s, paddles_s, 1);
 	}
 }
